@@ -9,6 +9,7 @@ World::World(int w, int h) : width(w), height(h)
 }
 
 
+/***************** DESTRUCTOR *****************/
 World::~World()
 {
     std::cout << "Destroy world" << std::endl;

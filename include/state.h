@@ -1,7 +1,6 @@
 #ifndef STATE_H
 #define STATE_H
 
-
 /**
  * @struct State
  * @brief Represents a discrete position in the grid world.
