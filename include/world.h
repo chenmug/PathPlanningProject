@@ -49,6 +49,7 @@ public:
      */
     bool isFree(int x, int y) const;
 
+    // TODO:
     // Add, remove, print, reset obstacles
 };
 
