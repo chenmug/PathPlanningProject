@@ -16,12 +16,17 @@ private:
 
 public:
     /**
-     * @brief Constructs a world with given dimensions.
+     * @brief Constructs a world object with given dimensions.
      *
      * @param w Width of the world
      * @param h Height of the world
      */
     World(int w, int h);
+
+    /**
+     * @brief Destroy the world object.
+     */
+    ~World();
 
     /**
      * @brief Returns the width of the world.
