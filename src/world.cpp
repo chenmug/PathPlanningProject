@@ -10,6 +10,7 @@ World::World(int w, int h) : width(w), height(h)
 
 
 /***************** DESTRUCTOR *****************/
+
 World::~World()
 {
     std::cout << "Destroy world" << std::endl;
@@ -36,5 +37,5 @@ int World::getHeight() const
 
 bool World::isFree(int x, int y) const 
 {
-    return true;
+    return (x >= 0 && x < width && y >= 0 && y < height);
 }

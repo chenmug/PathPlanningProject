@@ -20,4 +20,4 @@ struct State
 
 // Add a comparison function later for planner
 
-#endif
+#endif // STATE_H

@@ -21,6 +21,9 @@
     <ClCompile Include="src\world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -28,6 +31,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
