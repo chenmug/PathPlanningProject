@@ -1,0 +1,40 @@
+#include <iostream>
+#include "graph.h"
+
+/***************** CONSTRUCTOR *****************/
+
+Graph::Graph(World* world) : world(world)
+{
+	std::cout << "Create graph" << std::endl;
+}
+
+
+/***************** DESTRUCTOR *****************/
+
+Graph::~Graph()
+{
+	std::cout << "Destroy graph" << std::endl;
+}
+
+
+/**************** GET NEIGHBOR ****************/
+
+std::vector<State> Graph::getNeighbors(const State& state) const
+{
+	std::vector<State> neighbors;
+	static const std::vector<State> moves = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
+	
+	for (const auto& move : moves)
+	{
+		State next;
+		next.x = state.x + move.x;
+		next.y = state.y + move.y;
+
+		if (world->isFree(next.x, next.y))
+		{
+			neighbors.push_back(next);
+		}
+	}
+
+	return neighbors;
+}
