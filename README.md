@@ -76,4 +76,5 @@ main.cpp      # Entry point
 
 ---
 
-###Note: This is a work in progress. Current implementation demonstrates BFS and architecture; additional algorithms and features are planned.
+### Note: 
+This is a work in progress. Current implementation demonstrates BFS and architecture; additional algorithms and features are planned.
