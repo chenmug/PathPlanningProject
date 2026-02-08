@@ -37,6 +37,22 @@ struct State
 	{
 		return (x == other.x && y == other.y);
 	}
+
+	/**
+	 * @brief Compares two State objects for inequality.
+	 *
+	 * Two states are considered different if they do not represent the same
+	 * position in the grid world. This operator is implemented as the logical
+	 * negation of operator==, ensuring consistency between equality and
+	 * inequality checks.
+	 *
+	 * @param other The state to compare with.
+	 * @return true if the states are not equal, false otherwise.
+	 */
+	bool operator!=(const State& other) const
+	{
+		return (x != other.x || y != other.y);
+	}
 };
 
 
