@@ -1,90 +1,79 @@
 # Grid-Based Path Planning & Decision System (C++)
 
-A **grid-based path planning and decision system** implemented in modern C++, with a focus on **algorithmic design**, **clean object-oriented architecture**, and **low-level implementation from scratch**. 
-No external libraries are used.
+**Status:** Work in Progress – BFS implemented, Dijkstra & A* planned  
 
-The system models a 2D world as a state-space graph, computes paths, and supports higher-level decision and simulation layers:
-
-	World -> Graph -> Planner -> Decision -> Simulation
+A grid-based path planning and decision system implemented in modern C++, focusing on algorithmic design, clean object-oriented architecture, and low-level implementation from scratch. No external libraries are used.
 
 ---
 
 ## Motivation
-
-- Demonstrate strong C++ fundamentals and object-oriented design  
-- Implement classical algorithms from scratch  
-- Build a clear, extensible architecture for planning and simulation  
-- Maintain deterministic behavior and testability  
+- Showcase C++ fundamentals and object-oriented design
+- Implement classical pathfinding algorithms from scratch
+- Build a clear, extensible architecture for planning and decision-making
+- Maintain deterministic behavior and testability
 
 ---
 
 ## System Overview
 
-**Layers & Responsibilities:**
+Layers:
 
-- **World:** Defines grid dimensions and environmental constraints.  
-- **State:** Represents discrete positions in the grid (hashable, comparable).  
-- **Graph:** Generates neighbors and connectivity information.  
-- **Planner:** Computes paths (currently BFS, planned Dijkstra & A*).  
-- **Decision:** Chooses goals and invokes the planner.  
-- **Simulation:** Advances system in discrete steps, applies actions, enables reproducible experiments.  
+```
+World -> Graph -> Planner -> Decision -> Simulation
+```
 
-Each layer is **loosely coupled** and communicates via explicit interfaces.
+**Responsibilities:**
+- **World:** Defines grid dimensions and constraints
+- **State:** Represents discrete positions
+- **Graph:** Generates neighbors and connectivity
+- **Planner:** Computes paths (BFS implemented; Dijkstra & A* planned)
+- **Decision:** Chooses goals and invokes the planner
+- **Simulation:** Applies actions in discrete steps
 
 ---
 
 ## Algorithms
-
-- **Implemented:** BFS, parent-based path reconstruction, hash-based visited tracking  
-- **Planned:** Dijkstra, A* with heuristics, cost-aware planning  
-
-All implemented manually, without external libraries.
+- **Implemented:** BFS, parent-based path reconstruction, hash-based visited tracking
+- **Planned:** Dijkstra, A* with heuristics
+- All implemented manually, no external libraries.
 
 ---
 
 ## Testing
-
-Includes unit and integration tests for:
-
-- State equality & hashing  
-- World boundary checks  
-- Graph neighbor generation  
-- Planner correctness & path validation  
-- End-to-end system sanity  
+Unit and integration tests cover:
+- State equality & hashing
+- World boundary checks
+- Graph neighbor generation
+- Planner correctness & path validation
+- End-to-end system sanity
 
 ---
 
 ## Project Structure
 
-- `include/` - Header files for each class
-- `src/` - Implementation files
-- `tests/` - Unit and integration tests
-- `main.cpp` - Entry point 
-
----
-
-## Design Principles
-
-- Clear separation of responsibilities  
-- Deterministic behavior  
-- Minimal coupling  
-- Test-driven validation  
-- Extensible architecture  
+```
+include/      # Header files
+src/          # Implementation files
+tests/        # Unit & integration tests
+main.cpp      # Entry point
+```
 
 ---
 
 ## Planned Extensions
-
-- Obstacles and weighted edges  
-- A* search with heuristics  
-- Rule-based or multi-agent decision-making  
-- Simulation loop with logging/visualization  
-- Advanced motion models  
+- Obstacles and weighted edges
+- Dijkstra and A* search with heuristics
+- Rule-based or multi-agent decision-making
+- Simulation loop with logging/visualization
+- Advanced motion models
 
 ---
 
 ## Build & Environment
-
-- **Language:** C++  
-- **IDE:** Visual Studio (Windows/Linux)  
+- **Language:** C++
+- **IDE:** Visual Studio (Windows/Linux)
 - **Dependencies:** Standard library only
+
+---
+
+###Note: This is a work in progress. Current implementation demonstrates BFS and architecture; additional algorithms and features are planned.
