@@ -23,10 +23,6 @@ public:
      */
     World(int w, int h);
 
-    /**
-     * @brief Destroy the world object.
-     */
-    ~World();
 
     /**
      * @brief Returns the width of the world.

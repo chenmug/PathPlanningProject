@@ -32,12 +32,8 @@ public:
 	 *
 	 * @param world Pointer to the world representation
 	 */
-	Graph(World* world);
+	Graph(const World* world);
 
-	/**
-	 * @brief Destroy the graph object.
-	 */
-	~Graph();
 
 	/**
 	 * @brief Returns all valid neighboring states of a given state.

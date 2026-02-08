@@ -1,20 +1,8 @@
-#include <iostream>
 #include "World.h"
 
 /***************** CONSTRUCTOR *****************/
 
-World::World(int w, int h) : width(w), height(h) 
-{
-    std::cout << "Create world" << std::endl;
-}
-
-
-/***************** DESTRUCTOR *****************/
-
-World::~World()
-{
-    std::cout << "Destroy world" << std::endl;
-}
+World::World(int w, int h) : width(w), height(h) {}
 
 
 /***************** GET WIDTH ******************/

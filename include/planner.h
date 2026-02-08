@@ -33,10 +33,6 @@ public:
 	 */
 	Planner(const Graph& graph);
 
-	/**
-	 * @brief Destroy the Planner object.
-	 */
-	~Planner();
 
 	/**
 	 * @brief Plans a path from a start state to a goal state.

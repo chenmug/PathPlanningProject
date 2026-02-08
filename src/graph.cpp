@@ -1,20 +1,8 @@
-#include <iostream>
 #include "graph.h"
 
 /***************** CONSTRUCTOR *****************/
 
-Graph::Graph(World* world) : world(world)
-{
-	std::cout << "Create graph" << std::endl;
-}
-
-
-/***************** DESTRUCTOR *****************/
-
-Graph::~Graph()
-{
-	std::cout << "Destroy graph" << std::endl;
-}
+Graph::Graph(const World* world) : world(world) {}
 
 
 /**************** GET NEIGHBOR ****************/
