@@ -127,7 +127,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\graph.cpp" />
+    <ClCompile Include="src\planner.cpp" />
     <ClCompile Include="src\world.cpp" />
+    <ClCompile Include="tests\run_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -135,8 +137,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\graph.h" />
+    <ClInclude Include="include\planner.h" />
     <ClInclude Include="include\state.h" />
     <ClInclude Include="include\world.h" />
+    <ClInclude Include="tests\test_framework.h" />
+    <ClInclude Include="tests\test_graph.cpp" />
+    <ClInclude Include="tests\test_planner.cpp" />
+    <ClInclude Include="tests\test_state.cpp" />
+    <ClInclude Include="tests\test_world.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

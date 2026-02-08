@@ -24,6 +24,12 @@
     <ClCompile Include="src\graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\planner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\run_tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -37,6 +43,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\planner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_world.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_planner.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
