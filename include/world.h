@@ -57,6 +57,8 @@ public:
     /**
      * @brief Add a single obstacle to the 2D grid world.
      *
+     * This function does not add an obstacle if it is outside the world boundaries.
+     * 
      * @param obstacle An obstacle to add
      * @return true if the obstacle was added, false if it already existed
      */

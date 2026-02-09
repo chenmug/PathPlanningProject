@@ -39,6 +39,11 @@ bool World::isFree(int x, int y) const
 
 bool World::addObstacle(const State& obstacle)
 {
+    if (obstacle.x < 0 || obstacle.x >= width || obstacle.y < 0 || obstacle.y >= height)
+    {
+        return false;
+    }
+
     return obstacles.insert(obstacle).second;
 }
 
