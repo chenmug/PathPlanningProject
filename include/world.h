@@ -1,6 +1,9 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <unordered_set>
+#include "state.h"
+
 /**
  * @class World
  * @brief Represents a 2D grid world in which an agent can move.
@@ -13,6 +16,7 @@ class World {
 private:
     int width;  // Width of the world (number of columns)
     int height; // Height of the world (number of rows)
+    std::unordered_set<State> obstacles;  // Set of blocked cells in the world
 
 public:
     /**
@@ -50,8 +54,31 @@ public:
      */
     bool isFree(int x, int y) const;
 
-    // TODO:
-    // Add, remove, print, reset obstacles
+    /**
+     * @brief Add a single obstacle to the 2D grid world.
+     *
+     * @param obstacle An obstacle to add
+     * @return true if the obstacle was added, false if it already existed
+     */
+    bool addObstacle(const State& obstacle);
+
+    /**
+     * @brief Remove a single obstacle from the 2D grid world.
+     *
+     * @param obstacle An obstacle to remove
+     * @return true if the obstacle was removed, false if it did not exist
+     */
+    bool removeObstacle(const State& obstacle);
+
+    /**
+     * @brief Clear all obstacles from the 2D grid world
+     */
+    void clearObstacles();
+
+    /**
+     * @brief Print the 2D grid world
+     */
+    void printWorld() const;
 };
 
 #endif // WORLD_H
