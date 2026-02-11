@@ -1,32 +1,62 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <unordered_set>
+#include <vector>
 #include "state.h"
+
 
 /**
  * @class World
- * @brief Represents a 2D grid world in which an agent can move.
+ * @brief Represents a 2D grid world where each cell has a movement cost (weight).
  *
- * The World class is responsible for defining the boundaries of the environment
- * and determining whether a given position is free or blocked.
- * It does not handle agent logic, planning, or decision-making.
+ * The World class is responsible for storing the environment grid,
+ * including weights for each cell, and determining whether a cell is free (walkable)
+ * or blocked (very high weight).
+ *
+ * It does not handle agent logic, path planning, or decision-making.
  */
-class World {
+class World 
+{
+public:
+    static const int INF = 1000000;  /// Represents a blocked cell (obstacle)
+
+    /**
+     * @enum CellType
+     * @brief Defines types of cells for better readability.
+     */
+    enum CellType 
+    {
+        FREE = 1,     // Walkable cell
+        BLOCK = INF   // Obstacle
+    };
+
 private:
     int width;  // Width of the world (number of columns)
     int height; // Height of the world (number of rows)
-    std::unordered_set<State> obstacles;  // Set of blocked cells in the world
+    std::vector<std::vector<int>> grid;  // Grid storing weights for each cell
+
+    /**
+     * @brief Checks if the given coordinates are within world boundaries.
+     *
+     * This is a private helper used internally by other functions.
+     *
+     * @param x X-coordinate
+     * @param y Y-coordinate
+     * @return true if (x, y) is inside the grid, false otherwise
+     */
+    bool inBounds(int x, int y) const;
 
 public:
+
     /**
      * @brief Constructs a world object with given dimensions.
+     *
+     * Initializes all cells with default weight 1 (free).
      *
      * @param w Width of the world
      * @param h Height of the world
      */
     World(int w, int h);
-
 
     /**
      * @brief Returns the width of the world.
@@ -43,44 +73,46 @@ public:
     int getHeight() const;
 
     /**
-     * @brief Checks whether a given cell is free.
+     * @brief Returns the weight (movement cost) of a given cell.
      *
-     * This function determines if the position (x, y) is inside the world
-     * boundaries and not blocked.
+     * Retrieves the weight (or movement cost) of the specified cell based on its state.
      *
-     * @param x X-coordinate
-     * @param y Y-coordinate
-     * @return true if the cell is free, false otherwise
+     * @param s The state of the cell, which includes its position in the grid.
+     * @return Weight of the cell
      */
-    bool isFree(int x, int y) const;
+    int getWeight(const State& s) const;
 
     /**
-     * @brief Add a single obstacle to the 2D grid world.
+     * @brief Sets the weight (movement cost) of a given cell.
      *
-     * This function does not add an obstacle if it is outside the world boundaries.
-     * 
-     * @param obstacle An obstacle to add
-     * @return true if the obstacle was added, false if it already existed
-     */
-    bool addObstacle(const State& obstacle);
-
-    /**
-     * @brief Remove a single obstacle from the 2D grid world.
+     * Updates the weight (movement cost) for the specified cell, using its state.
      *
-     * @param obstacle An obstacle to remove
-     * @return true if the obstacle was removed, false if it did not exist
+     * @param s The state of the cell, which includes its position in the grid.
+     * @param weight The new weight to assign to the cell
+     * @return true if the cell exists and was updated, false if out of bounds
      */
-    bool removeObstacle(const State& obstacle);
+    bool setWeight(const State& s, int weight);
 
     /**
-     * @brief Clear all obstacles from the 2D grid world
+     * @brief Checks whether a given cell is free (walkable).
+     *
+     * Determines if the specified cell is free (walkable), meaning its weight is less than INF
+     * and it is within the grid boundaries.
+     *
+     * @param s The state of the cell, which includes its position in the grid.
+     * @return true if the cell is free (walkable), false otherwise
      */
-    void clearObstacles();
+    bool isFree(const State& s) const;
 
     /**
-     * @brief Print the 2D grid world
+     * @brief Resets all cells to default weight (1 = free).
      */
-    void printWorld() const;
+    void clearGrid();
+
+    /**
+     * @brief Prints the grid to the console (for debugging)
+     */
+    void printGrid() const;
 };
 
 #endif // WORLD_H

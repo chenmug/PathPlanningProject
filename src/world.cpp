@@ -3,7 +3,15 @@
 
 /***************** CONSTRUCTOR *****************/
 
-World::World(int w, int h) : width(w), height(h) {}
+World::World(int w, int h) : width(w), height(h),grid(w, std::vector<int>(h, FREE)) {}
+
+
+/****************** IS BOUNDS ******************/
+
+bool World::inBounds(int x, int y) const
+{
+    return x >= 0 && x < width && y >= 0 && y < height;
+}
 
 
 /***************** GET WIDTH ******************/
@@ -22,60 +30,69 @@ int World::getHeight() const
 }
 
 
+/***************** GET WEIGHT *****************/
+
+int World::getWeight(const State& s) const
+{
+    if (!inBounds(s.x, s.y))
+    {
+        return INF;
+    }
+
+    return grid[s.y][s.x];
+}
+
+
+/***************** SET WEIGHT ****************/
+
+bool World::setWeight(const State& s, int weight)
+{
+    if (!inBounds(s.x, s.y))
+    {
+        return false;
+    }
+
+    grid[s.y][s.x] = weight;
+    return true;
+}
+
+
 /******************* IS FREE ******************/
 
-bool World::isFree(int x, int y) const 
+bool World::isFree(const State& s) const
 {
-    if (x < 0 || x >= width || y < 0 || y >= height)
+    if (!inBounds(s.x, s.y))
     {
         return false;
     }
 
-    return obstacles.find(State{ x, y }) == obstacles.end();
+    return grid[s.y][s.x] != BLOCK;
 }
 
 
-/**************** ADD OBSTACLE ****************/
+/**************** CLEAR GRID *****************/
 
-bool World::addObstacle(const State& obstacle)
+void World::clearGrid()
 {
-    if (obstacle.x < 0 || obstacle.x >= width || obstacle.y < 0 || obstacle.y >= height)
+    for (auto& row : grid)
     {
-        return false;
-    }
-
-    return obstacles.insert(obstacle).second;
-}
-
-
-/*************** REMOVE OBSTACLE **************/
-
-bool World::removeObstacle(const State& obstacle)
-{
-    return obstacles.erase(obstacle) > 0;
-}
-
-
-/*************** CLEAR OBSTACLE ***************/
-
-void World::clearObstacles()
-{
-    obstacles.clear();
-}
-
-
-/***************** PRINT WORLD ****************/
-
-void World::printWorld() const
-{
-    int x = 0;
-    int y = 0;
-
-    for (y = 0; y < height; ++y)
-    {
-        for (x = 0; x < width; ++x)
+        for (auto& cell : row)
         {
-            if (obstacles.find(State{ x, y }) != obstacles.end())
+            cell = FREE;
+        }
+    }
+}
+
+
+/***************** PRINT GRID *****************/
+
+void World::printGrid() const 
+{
+    for (int y = 0; y < height; ++y) 
+    {
+        for (int x = 0; x < width; ++x) 
+        {
+            if (grid[y][x] >= INF)
             {
                 std::cout << "# ";
             }

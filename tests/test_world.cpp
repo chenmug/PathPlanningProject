@@ -1,5 +1,7 @@
 #include "world.h"
+#include "state.h"
 #include "test_framework.h"
+
 
 void testWorldDimensions()
 {
@@ -11,78 +13,81 @@ void testWorldDimensions()
 void testWorldBoundaries()
 {
     World world(10, 10);
-    bool passed = (world.isFree(5, 5) &&
-                  !world.isFree(-1, 0) &&
-                  !world.isFree(0, -1) &&
-                  !world.isFree(10, 0) &&
-                  !world.isFree(0, 10));
+    State inside{ 5, 5 };
+    State negX{ -1, 0 };
+    State negY{ 0, -1 };
+    State outX{ 10, 0 };
+    State outY{ 0, 10 };
+
+    bool passed = world.isFree(inside) &&
+        !world.isFree(negX) &&
+        !world.isFree(negY) &&
+        !world.isFree(outX) &&
+        !world.isFree(outY);
 
     check(passed, "world boundaries");
 }
 
 
-void testWorldAddObstacle()
+void testWorldSetAndGetWeight()
 {
-    World world(10, 10);
-    State obstacle{ 3,3 };
-    State out{ -1,0 };
-
+    World world(5, 5);
+    State s{ 2, 2 };
+    State out{ -1, 0 };
     bool passed = true;
-    passed &= world.addObstacle(obstacle);   // first add
-    passed &= !world.addObstacle(obstacle);  // duplicate add fails
-    passed &= !world.addObstacle(out);       // out-of-bounds fails
-    passed &= !world.isFree(3, 3);           // cell is now blocked
 
-    check(passed, "add obstacle");
+    passed &= world.getWeight(s) == World::FREE;
+    passed &= world.setWeight(s, 10);
+    passed &= world.getWeight(s) == 10;
+    passed &= !world.setWeight(out, 5); // out-of-bounds fails
+
+    check(passed, "set and get weight");
 }
 
 
-void testWorldRemoveObstacle()
+void testWorldIsFree()
 {
-    World world(10, 10);
-    State obstacle{ 3,3 };
-    State missing{ 7,7 };
+    World world(5, 5);
+    State s{ 1, 1 };
+    State blocked{ 2, 2 };
 
-    world.addObstacle(obstacle);
-    bool passed = true;
-    passed &= world.removeObstacle(obstacle);   // remove exists
-    passed &= world.isFree(3, 3);               // now free
-    passed &= !world.removeObstacle(missing);   // remove non-existent fails
+    world.setWeight(blocked, World::INF);
 
-    check(passed, "remove obstacle");
+    bool passed = world.isFree(s) && !world.isFree(blocked);
+    check(passed, "isFree with weights and blocked cells");
 }
 
 
-void testWorldClearObstacles()
+void testWorldClearGrid()
 {
-    World world(10, 10);
-    State obs1{ 3,3 }, obs2{ 7,7 }, obs3{ 1,5 };
+    World world(5, 5);
+    State s1{ 0, 0 }, s2{ 4, 4 };
     int x = 0;
     int y = 0;
-
-    world.addObstacle(obs1);
-    world.addObstacle(obs2);
-    world.addObstacle(obs3);
-    world.clearObstacles();
-
     bool passed = true;
-    for (y = 0; y < world.getHeight(); ++y)
+
+    world.setWeight(s1, World::INF);
+    world.setWeight(s2, 50);
+    world.clearGrid();
+
+    for (x = 0; x < world.getWidth(); ++x) 
     {
-        for (x = 0; x < world.getWidth(); ++x)
+        for (y = 0; y < world.getHeight(); ++y) 
         {
-            if (!world.isFree(x, y))
+            if (!world.isFree(State{ x, y }) || world.getWeight(State{ x, y }) != World::FREE) 
             {
                 passed = false;
                 break;
             }
         }
+
         if (!passed)
         {
             break;
         }
     }
 
-    check(passed, "clear obstacles");
+    check(passed, "clearGrid resets all weights to FREE");
 }
 
 
@@ -92,7 +97,7 @@ void runWorldTests()
 
     testWorldDimensions();
     testWorldBoundaries();
-    testWorldAddObstacle();
-    testWorldRemoveObstacle();
-    testWorldClearObstacles();
+    testWorldSetAndGetWeight();
+    testWorldIsFree();
+    testWorldClearGrid();
 }
