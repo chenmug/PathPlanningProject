@@ -25,7 +25,7 @@ World -> Graph -> Planner -> Decision -> Simulation
 **Responsibilities:**
 - **World:** Stores the grid as weighted cells. Free cells have weight 1, blocked cells use `INF`. Supports querying and updating weights, checking boundaries, and whether cells are walkable (`isFree`).
 - **State:** Represents discrete positions `(x, y)` in the grid and is used in all pathfinding algorithms.
-- **Graph:** Generates neighbors and connectivity.
+- **Graph:** Generates neighbors (8-directional) and movement costs.
 - **Planner:** Computes paths (BFS implemented; Dijkstra & A* planned).
 - **Decision:** Chooses goals and invokes the planner.
 - **Simulation:** Applies actions in discrete steps.
@@ -35,6 +35,7 @@ World -> Graph -> Planner -> Decision -> Simulation
 ## Algorithms
 - **Implemented:** BFS, parent-based path reconstruction, hash-based visited tracking
 - **Planned:** Dijkstra, A* with heuristics
+- Supports weighted edges and 8-directional movement
 - All implemented manually, no external libraries.
 
 ---
@@ -43,7 +44,7 @@ World -> Graph -> Planner -> Decision -> Simulation
 Unit and integration tests cover:
 - State equality & hashing
 - World grid initialization, boundary checks, weights, and free/blocked cells
-- Graph neighbor generation
+- Graph neighbor generation (8 directions) and cost calculations
 - Planner correctness & path validation
 - End-to-end system sanity
 
@@ -61,7 +62,6 @@ main.cpp      # Entry point
 ---
 
 ## Planned Extensions
-- Support for diagonal movement and variable weights in the World
 - Dijkstra and A* search with heuristics using cell weights
 - Rule-based or multi-agent decision-making
 - Simulation loop with logging/visualization
