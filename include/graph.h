@@ -7,44 +7,67 @@
 
 /**
  * @class Graph
- * @brief Represents the state-space graph of the world.
+ * @brief Represents the state-space graph of the world with weighted movement.
  *
  * The Graph class defines which states are reachable from a given state
- * based on the world's constraints.
- * It provides neighborhood and connectivity information, but does not
- * perform planning, goal selection, or decision-making.
+ * based on the world's constraints. It provides neighborhood, connectivity,
+ * and movement cost information.
  */
 class Graph
 {
 private:
-	/**
-	* @brief Pointer to the world representation.
-	*
-	* The Graph uses this pointer to query world constraints
-	* such as boundaries and obstacle information.
-	* The Graph does not own the World object.
-	*/
-	const World* world;
+    const World* world;  // Pointer to the world; Graph does not own it.
+
+    /**
+     * @brief Possible moves including diagonals.
+     */
+    static const std::vector<State> moves;
 
 public:
-	/**
-	 * @brief Constructs a graph using the given world.
-	 *
-	 * @param world Pointer to the world representation
-	 */
-	Graph(const World* world);
+    /**
+     * @brief Constructs a graph using the given world.
+     * 
+     * @param world Pointer to the world
+     */
+    Graph(const World* world);
 
+    /**
+     * @brief Returns all valid neighboring states of a given state.
+     * 
+     * @param state Current state
+     * 
+     * @return Vector of reachable neighboring states
+     */
+    std::vector<State> getNeighbors(const State& state) const;
 
-	/**
-	 * @brief Returns all valid neighboring states of a given state.
-	 *
-	 * @param state Current state
-	 * @return Vector of reachable neighboring states
-	 */
-	std::vector<State> getNeighbors(const State& state) const;
+    /**
+     * @brief Returns the movement cost between two adjacent states.
+     * 
+     * @param from Starting state
+     * @param to Ending state
+     * 
+     * @return Movement cost; INF if invalid
+     */
+    int getCost(const State& from, const State& to) const;
 
-	// TODO:
-	// Add isValid(State), getCost(State, State), isGoal(State)
+    /**
+     * @brief Checks if a state is valid (inside world and not blocked).
+     * 
+     * @param state State to check
+     * 
+     * @return true if valid, false otherwise
+     */
+    bool isValid(const State& state) const;
+
+    /**
+     * @brief Checks if a state is the goal.
+     * 
+     * @param state State to check
+     * @param goal Goal state
+     * 
+     * @return true if state equals goal
+     */
+    bool isGoal(const State& state, const State& goal) const;
 };
 
 #endif // GRAPH_H

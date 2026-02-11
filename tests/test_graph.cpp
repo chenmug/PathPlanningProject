@@ -1,144 +1,3 @@
-//#include "graph.h"
-//#include "world.h"
-//#include "state.h"
-//#include "test_framework.h"
-//
-//
-//void checkNeighborsAreValid(const std::vector<State>& neighbors, const World& world)
-//{
-//    bool neighborsAreValid = true;
-//
-//    for (const auto& n : neighbors)
-//    {
-//        if (!world.isFree(n.x, n.y))
-//        {
-//            neighborsAreValid = false;
-//            break; 
-//        }
-//    }
-//
-//    check(neighborsAreValid, "all neighbors are free");
-//}
-//
-//
-//void testGraphNeighborsMiddle()
-//{
-//    World world(5, 5);
-//    Graph graph(&world);
-//    State center{ 2, 2 };
-//
-//    auto neighbors = graph.getNeighbors(center);
-//    check(neighbors.size() == 4, "center cell has 4 neighbors");
-//    checkNeighborsAreValid(neighbors, world);
-//}
-//
-//
-//void testGraphNeighborsCorner()
-//{
-//    World world(5, 5);
-//    Graph graph(&world);
-//    State corner{ 0, 0 };
-//
-//    auto neighbors = graph.getNeighbors(corner);
-//    check(neighbors.size() == 2, "corner cell has 2 neighbors");
-//    checkNeighborsAreValid(neighbors, world);
-//}
-//
-//
-//void testGraphNeighborsEdge()
-//{
-//    World world(5, 5);
-//    Graph graph(&world);
-//    State edge{ 0, 2 };
-//
-//    auto neighbors = graph.getNeighbors(edge);
-//    check(neighbors.size() == 3, "edge cell has 3 neighbors");
-//    checkNeighborsAreValid(neighbors, world);
-//}
-//
-//
-//void testGraphWithObstacles()
-//{
-//    World world(5, 5);
-//    Graph graph(&world);
-//    State center{ 2, 2 };
-//
-//    world.addObstacle({ 1, 2 });
-//    world.addObstacle({ 2, 1 });
-//
-//    auto neighbors = graph.getNeighbors(center);
-//    check(neighbors.size() == 2, "center cell with 2 obstacles has 2 neighbors");
-//    checkNeighborsAreValid(neighbors, world);
-//
-//    world.addObstacle({ 3, 2 });
-//    world.addObstacle({ 2, 3 });
-//    neighbors = graph.getNeighbors(center);
-//    check(neighbors.empty(), "center cell completely blocked has no neighbors");
-//}
-//
-//
-//void testGraphSinglePath()
-//{
-//    World world(3, 3);
-//    Graph graph(&world);
-//    State start{ 1, 1 };
-//
-//    world.addObstacle({ 0, 1 });
-//    world.addObstacle({ 1, 0 });
-//    world.addObstacle({ 1, 2 });
-//
-//    auto neighbors = graph.getNeighbors(start);
-//    check(neighbors.size() == 1, "center cell with single path has 1 neighbor");
-//    checkNeighborsAreValid(neighbors, world);
-//}
-//
-//
-//void testGraphMultiplePaths()
-//{
-//    World world(3, 3);
-//    Graph graph(&world);
-//    State start{ 1, 1 };
-//
-//    world.addObstacle({ 0, 1 });
-//    world.addObstacle({ 1, 0 });
-//
-//    auto neighbors = graph.getNeighbors(start);
-//    check(neighbors.size() == 2, "center cell with multiple paths has 2 neighbors");
-//    checkNeighborsAreValid(neighbors, world);
-//}
-//
-//
-//void testGraphUnreachableGoal()
-//{
-//    World world(3, 3);
-//    Graph graph(&world);
-//    State start{ 1, 1 };
-//
-//    world.addObstacle({ 0, 1 });
-//    world.addObstacle({ 1, 0 });
-//    world.addObstacle({ 2, 1 });
-//    world.addObstacle({ 1, 2 });
-//
-//    auto neighbors = graph.getNeighbors(start);
-//    check(neighbors.empty(), "unreachable goal has no neighbors");
-//}
-//
-//
-//void runGraphTests()
-//{
-//    testHeader("GRAPH TESTS");
-//
-//    testGraphNeighborsMiddle();
-//    testGraphNeighborsCorner();
-//    testGraphNeighborsEdge();
-//    testGraphWithObstacles();
-//    testGraphSinglePath();
-//    testGraphMultiplePaths();
-//    testGraphUnreachableGoal();
-//}
-
-
-
 #include "graph.h"
 #include "world.h"
 #include "state.h"
@@ -146,46 +5,51 @@
 #include <algorithm>
 #include <string>
 
-void checkExpectedNeighbors(const std::vector<State>& neighbors, const std::vector<State>& expected, const char* testName)
-{
-    size_t actual = neighbors.size();
-    size_t exp = expected.size();
-    bool pass = (actual == exp);
+#define DIAGONAL_COST 1.4142
 
-    if (!pass) 
+
+void checkNeighbors(const std::vector<State>& neighbors, const std::vector<State>& expected, const char* testName)
+{
+    bool pass = (neighbors.size() == expected.size());
+    if (pass)
     {
-        std::string msg = std::string(testName) + ": expected " +
-            std::to_string(exp) + " neighbors, got " +
-            std::to_string(actual);
-        check(false, msg.c_str());
+        for (const auto& s : expected)
+        {
+            if (std::find(neighbors.begin(), neighbors.end(), s) == neighbors.end())
+            {
+                pass = false;
+                break;
+            }
+        }
     }
-    else 
-    {
-        std::string msg = std::string(testName) + ": number of neighbors - " + std::to_string(actual);
-        check(true, msg.c_str());
-    }
+
+    check(pass, testName);
 }
 
 
-void testGraphNeighborsBasic()
+void testGraphNeighbors()
 {
-    World world(5, 5);
+    World world(3, 3);
     Graph graph(&world);
 
-    // Center
-    State center{ 2, 2 };
+    State center{ 1,1 };
     auto neighbors = graph.getNeighbors(center);
-    checkExpectedNeighbors(neighbors, { {2,1}, {2,3}, {1,2}, {3,2} }, "center cell");
 
-    // Corner
-    State corner{ 0, 0 };
+    // All 8 neighbors should exist in an empty grid
+    std::vector<State> expected = 
+    {
+        {0,0},{0,1},{0,2},
+        {1,0},      {1,2},
+        {2,0},{2,1},{2,2}
+    };
+
+    checkNeighbors(neighbors, expected, "neighbors for center cell");
+
+    // Corner cell
+    State corner{ 0,0 };
     neighbors = graph.getNeighbors(corner);
-    checkExpectedNeighbors(neighbors, { {0,1}, {1,0} }, "corner cell");
-
-    // Edge
-    State edge{ 0, 2 };
-    neighbors = graph.getNeighbors(edge);
-    checkExpectedNeighbors(neighbors, { {0,1}, {0,3}, {1,2} }, "edge cell");
+    expected = { {0,1}, {1,0}, {1,1} };
+    checkNeighbors(neighbors, expected, "neighbors for corner cell");
 }
 
 
@@ -193,23 +57,56 @@ void testGraphWithObstacles()
 {
     World world(3, 3);
     Graph graph(&world);
+    State s1{ 0, 1 }, s2{ 1, 0 }, s3{ 2, 1 };
+
+    // Add obstacles around center
+    world.setWeight(s1, World::INF);
+    world.setWeight(s2, World::INF);
+    world.setWeight(s3, World::INF);
+
     State center{ 1,1 };
-
-    // Two neighbors blocked
-    world.addObstacle({ 0,1 });
-    world.addObstacle({ 1,0 });
     auto neighbors = graph.getNeighbors(center);
-    checkExpectedNeighbors(neighbors, { {1,2}, {2,1} }, "center cell with 2 obstacles");
 
-    // Single path
-    world.addObstacle({ 2,1 });
-    neighbors = graph.getNeighbors(center);
-    checkExpectedNeighbors(neighbors, { {1,2} }, "center cell with single path");
+    // Only unblocked neighbors remain
+    std::vector<State> expected = { {0,0}, {0,2}, {1,2}, {2,0}, {2,2} };
+    checkNeighbors(neighbors, expected, "neighbors with obstacles");
+}
 
-    // Fully blocked
-    world.addObstacle({ 1,2 });
-    neighbors = graph.getNeighbors(center);
-    checkExpectedNeighbors(neighbors, {}, "center cell fully blocked");
+
+void testGraphCost()
+{
+    World world(3, 3);
+    Graph graph(&world);
+    State s1{ 1, 1 }, s2{ 1, 2 };
+
+    // Set weights
+    world.setWeight(s1, 2);  // center
+    world.setWeight(s2, 3);  // neighbor
+
+    State from{ 1,1 };
+    State to{ 1,2 }; // cardinal move
+    int cost = graph.getCost(from, to);
+    check(cost == 3, "getCost cardinal move");
+
+    State diag{ 2,2 };
+    cost = graph.getCost(from, diag);
+    int expectedDiag = int(DIAGONAL_COST * world.getWeight(diag));
+    check(cost == expectedDiag, "getCost diagonal move");
+
+    State blocked{ 0,1 };
+    world.setWeight(blocked, World::INF);
+    cost = graph.getCost(from, blocked);
+    check(cost == World::INF, "getCost blocked cell");
+}
+
+
+void testGraphIsGoal()
+{
+    Graph g(nullptr); // world not needed
+    State s1{ 1,1 }, s2{ 1,1 }, s3{ 2,2 };
+
+    check(g.isGoal(s1, s2), "isGoal true");
+    check(!g.isGoal(s1, s3), "isGoal false");
 }
 
 
@@ -217,6 +114,8 @@ void runGraphTests()
 {
     testHeader("GRAPH TESTS");
 
-    testGraphNeighborsBasic();
+    testGraphNeighbors();
     testGraphWithObstacles();
+    testGraphCost();
+    testGraphIsGoal();
 }
