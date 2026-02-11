@@ -23,12 +23,12 @@ World -> Graph -> Planner -> Decision -> Simulation
 ```
 
 **Responsibilities:**
-- **World:** Defines grid dimensions and constraints
-- **State:** Represents discrete positions
-- **Graph:** Generates neighbors and connectivity
-- **Planner:** Computes paths (BFS implemented; Dijkstra & A* planned)
-- **Decision:** Chooses goals and invokes the planner
-- **Simulation:** Applies actions in discrete steps
+- **World:** Stores the grid as weighted cells. Free cells have weight 1, blocked cells use `INF`. Supports querying and updating weights, checking boundaries, and whether cells are walkable (`isFree`).
+- **State:** Represents discrete positions `(x, y)` in the grid and is used in all pathfinding algorithms.
+- **Graph:** Generates neighbors and connectivity.
+- **Planner:** Computes paths (BFS implemented; Dijkstra & A* planned).
+- **Decision:** Chooses goals and invokes the planner.
+- **Simulation:** Applies actions in discrete steps.
 
 ---
 
@@ -42,7 +42,7 @@ World -> Graph -> Planner -> Decision -> Simulation
 ## Testing
 Unit and integration tests cover:
 - State equality & hashing
-- World boundary checks
+- World grid initialization, boundary checks, weights, and free/blocked cells
 - Graph neighbor generation
 - Planner correctness & path validation
 - End-to-end system sanity
@@ -61,8 +61,8 @@ main.cpp      # Entry point
 ---
 
 ## Planned Extensions
-- Obstacles and weighted edges
-- Dijkstra and A* search with heuristics
+- Support for diagonal movement and variable weights in the World
+- Dijkstra and A* search with heuristics using cell weights
 - Rule-based or multi-agent decision-making
 - Simulation loop with logging/visualization
 - Advanced motion models
@@ -77,4 +77,4 @@ main.cpp      # Entry point
 ---
 
 ### Note: 
-This is a work in progress. Current implementation demonstrates BFS and architecture; additional algorithms and features are planned.
+This is a work in progress. Current implementation demonstrates BFS, weighted World, and State; additional algorithms and features are planned.
