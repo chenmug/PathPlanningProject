@@ -4,6 +4,7 @@
 #include "graph.h"
 #include "state.h"
 #include <vector>
+#include <unordered_map>
 
 /**
  * @enum SearchType
