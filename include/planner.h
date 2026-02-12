@@ -83,9 +83,12 @@ private:
      * @param start The starting state
      * @param goal  The goal state
      * 
-     * @return The computed path if found, otherwise an empty vector
+     * @return A PlanResults struct containing:
+     * - path: vector of states from start to goal, empty if no path
+     * - success: true if a valid path was found, false otherwise
+     * - totalCost: accumulated cost of the path, undefined if no path found
      */
-    std::vector<State> runBFS(const State& start, const State& goal) const;
+    PlanResults runBFS(const State& start, const State& goal) const;
 
     /**
      * @brief Executes a weighted shortest-path search.
@@ -102,9 +105,12 @@ private:
      * @param goal  The goal state
      * @param type  Specifies whether to run Dijkstra or A*
      * 
-     * @return The computed path if found, otherwise an empty vector
+     * @return A PlanResults struct containing:
+     * - path: vector of states from start to goal, empty if no path
+     * - success: true if a valid path was found, false otherwise
+     * - totalCost: accumulated cost of the path, undefined if no path found
      */
-    std::vector<State> runWeightedSearch(const State& start, const State& goal, SearchType type) const;
+    PlanResults runWeightedSearch(const State& start, const State& goal, SearchType type) const;
 
     /**
      * @brief Executes Dijkstra's shortest path algorithm.
@@ -114,9 +120,13 @@ private:
      *
      * @param start The starting state
      * @param goal  The goal state
-     * @return The computed path if found, otherwise an empty vector
+     * 
+     * @return A PlanResults struct containing:
+     * - path: vector of states from start to goal, empty if no path
+     * - success: true if a valid path was found, false otherwise
+     * - totalCost: accumulated cost of the path, undefined if no path found
      */
-    std::vector<State> runDijkstra(const State& start, const State& goal) const;
+    PlanResults runDijkstra(const State& start, const State& goal) const;
 
     /**
      * @brief Executes A* search algorithm.
@@ -128,9 +138,12 @@ private:
      * @param start The starting state
      * @param goal  The goal state
      * 
-     * @return The computed path if found, otherwise an empty vector
+     * @return A PlanResults struct containing:
+     * - path: vector of states from start to goal, empty if no path
+     * - success: true if a valid path was found, false otherwise
+     * - totalCost: accumulated cost of the path, undefined if no path found
      */
-    std::vector<State> runAStar(const State& start, const State& goal) const;
+    PlanResults runAStar(const State& start, const State& goal) const;
 
     /**
      * @brief Reconstructs the path from goal to start using parent map.
