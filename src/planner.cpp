@@ -68,7 +68,7 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
 	else
 	{
 		auto path = reconstructPath(start, goal, parents);
-		totalCost = path.size() - 1;
+		totalCost = static_cast<int>(path.size()) - 1;
 
 		return PlanResults{ path, true, totalCost };
 	}
@@ -79,9 +79,11 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
 
 PlanResults Planner::runWeightedSearch(const State& start, const State& goal, SearchType type) const
 {
-	// priority_queue: {priority, state}, min-heap
 	using PQElement = std::pair<int, State>;
-	std::priority_queue<PQElement, std::vector<PQElement>, std::greater<>> pq;
+
+	// min-heap: smallest priority first
+	auto cmp = [](const PQElement& a, const PQElement& b) { return a.first > b.first; };
+	std::priority_queue<PQElement, std::vector<PQElement>, decltype(cmp)> pq(cmp);
 
 	std::unordered_map<State, int> g_cost;
 	std::unordered_map<State, State> parents;
