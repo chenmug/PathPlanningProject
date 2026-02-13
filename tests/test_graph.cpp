@@ -4,10 +4,12 @@
 #include "test_framework.h"
 #include <algorithm>
 #include <string>
+#include <cmath>
 
-#define DIAGONAL_COST 1.4142
 
-
+// -------------------------
+// CHECK NEIGHBORS - HELPER
+// -------------------------
 void checkNeighbors(const std::vector<State>& neighbors, const std::vector<State>& expected, const char* testName)
 {
     bool pass = (neighbors.size() == expected.size());
@@ -27,16 +29,19 @@ void checkNeighbors(const std::vector<State>& neighbors, const std::vector<State
 }
 
 
+// --------------------
+// GRAPH NEIGHBORS
+// --------------------
 void testGraphNeighbors()
 {
     World world(3, 3);
     Graph graph(&world);
 
+    // Center cell
     State center{ 1,1 };
     auto neighbors = graph.getNeighbors(center);
 
-    // All 8 neighbors should exist in an empty grid
-    std::vector<State> expected = 
+    std::vector<State> expected =
     {
         {0,0},{0,1},{0,2},
         {1,0},      {1,2},
@@ -50,56 +55,83 @@ void testGraphNeighbors()
     neighbors = graph.getNeighbors(corner);
     expected = { {0,1}, {1,0}, {1,1} };
     checkNeighbors(neighbors, expected, "neighbors for corner cell");
+
+    // Edge cell
+    State edge{ 0,1 };
+    neighbors = graph.getNeighbors(edge);
+    expected = { {0,0}, {0,2}, {1,0}, {1,1}, {1,2} };
+    checkNeighbors(neighbors, expected, "neighbors for edge cell");
 }
 
 
+// ----------------------
+// GRAPH WITH OBSTACLES
+// ----------------------
 void testGraphWithObstacles()
 {
     World world(3, 3);
     Graph graph(&world);
-    State s1{ 0, 1 }, s2{ 1, 0 }, s3{ 2, 1 };
+    State s1{ 0,1 }, s2{ 1,0 }, s3{ 2,1 };
 
-    // Add obstacles around center
-    world.setWeight(s1, World::INF);
-    world.setWeight(s2, World::INF);
-    world.setWeight(s3, World::INF);
+    world.setWeight(s1, World::BLOCK);
+    world.setWeight(s2, World::BLOCK);
+    world.setWeight(s3, World::BLOCK);
 
     State center{ 1,1 };
     auto neighbors = graph.getNeighbors(center);
 
-    // Only unblocked neighbors remain
     std::vector<State> expected = { {0,0}, {0,2}, {1,2}, {2,0}, {2,2} };
     checkNeighbors(neighbors, expected, "neighbors with obstacles");
 }
 
 
+// --------------------
+// GRAPH COST
+// --------------------
 void testGraphCost()
 {
-    World world(3, 3);
+    World world(4, 4);
     Graph graph(&world);
-    State s1{ 1, 1 }, s2{ 1, 2 };
-
-    // Set weights
-    world.setWeight(s1, 2);  // center
-    world.setWeight(s2, 3);  // neighbor
 
     State from{ 1,1 };
-    State to{ 1,2 }; // cardinal move
-    int cost = graph.getCost(from, to);
+    State toCard{ 1,2 };
+    State toDiag{ 2,2 };
+    State blocked{ 0,1 };
+    State nonNeighbor{ 3,0 };
+
+    world.setWeight(from, 2);
+    world.setWeight(toCard, 3);
+    world.setWeight(toDiag, 4);
+    world.setWeight(blocked, World::BLOCK);
+
+    // Cardinal move
+    int cost = graph.getCost(from, toCard);
     check(cost == 3, "getCost cardinal move");
 
-    State diag{ 2,2 };
-    cost = graph.getCost(from, diag);
-    int expectedDiag = int(DIAGONAL_COST * world.getWeight(diag));
+    // Diagonal move
+    cost = graph.getCost(from, toDiag);
+    int expectedDiag = int(graph.DIAGONAL_COST * world.getWeight(toDiag));
     check(cost == expectedDiag, "getCost diagonal move");
 
-    State blocked{ 0,1 };
-    world.setWeight(blocked, World::INF);
+    // Blocked neighbor
     cost = graph.getCost(from, blocked);
-    check(cost == World::INF, "getCost blocked cell");
+    check(cost == World::BLOCK, "getCost blocked cell");
+
+    // Non-neighbor
+    cost = graph.getCost(from, nonNeighbor);
+    check(cost == graph.NOT_NEIGHBOR, "getCost non-neighbor cell");
+
+    // Out-of-bounds
+    State outX{ 4,1 };
+    State outY{ 1,4 };
+    check(graph.getCost(from, outX) == -1, "getCost out-of-bounds X");
+    check(graph.getCost(from, outY) == -1, "getCost out-of-bounds Y");
 }
 
 
+// --------------------
+// GRAPH IS GOAL
+// --------------------
 void testGraphIsGoal()
 {
     Graph g(nullptr); // world not needed
@@ -110,6 +142,31 @@ void testGraphIsGoal()
 }
 
 
+// --------------------
+// GRAPH IS VALID
+// --------------------
+void testGraphIsValid()
+{
+    World world(3, 3);
+    Graph graph(&world);
+
+    State freeCell{ 0,0 };
+    State blocked{ 1,1 };
+    State outX{ 3,0 };
+    State outY{ 0,3 };
+
+    world.setWeight(blocked, World::BLOCK);
+
+    check(graph.isValid(freeCell), "isValid free cell");
+    check(!graph.isValid(blocked), "isValid blocked cell");
+    check(!graph.isValid(outX), "isValid out-of-bounds X");
+    check(!graph.isValid(outY), "isValid out-of-bounds Y");
+}
+
+
+// --------------------
+// GRAPH RUN TESTS
+// --------------------
 void runGraphTests()
 {
     testHeader("GRAPH TESTS");
@@ -118,4 +175,5 @@ void runGraphTests()
     testGraphWithObstacles();
     testGraphCost();
     testGraphIsGoal();
+    testGraphIsValid();
 }

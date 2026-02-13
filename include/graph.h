@@ -24,6 +24,9 @@ private:
     static const std::vector<State> moves;
 
 public:
+    static constexpr double DIAGONAL_COST = 1.4142; // diagonal move multiplier
+    static const int NOT_NEIGHBOR = -2; // non-neighbor state
+
     /**
      * @brief Constructs a graph using the given world.
      * 
@@ -46,7 +49,11 @@ public:
      * @param from Starting state
      * @param to Ending state
      * 
-     * @return Movement cost; INF if invalid
+     * @return 
+     * - Returns `BLOCK` if 'to' is blocked or out-of-bounds.
+     * - Returns `NOT_NEIGHBOR` if 'to' is not a neighbor of 'from'.
+     * - Returns `DIAGONAL_COST * weight` if moving diagonally.
+     * - Returns `weight` if moving cardinally.
      */
     int getCost(const State& from, const State& to) const;
 
