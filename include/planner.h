@@ -29,7 +29,7 @@ enum class SearchType
  * - success: True if a path was found, false otherwise
  * - totalCost: Total accumulated cost of the path
  *
- * If no path is found, `path` is empty and `totalCost` is 0.
+ * If no path is found, `path` is empty , success if false and `totalCost` is 0.
  */
 struct PlanResults
 {
