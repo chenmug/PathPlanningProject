@@ -183,6 +183,11 @@ std::vector<State> Planner::reconstructPath(const State& start, const State& goa
 
 PlanResults Planner::plan(const State& start, const State& goal, SearchType type) const
 {
+	if (!graph.isValid(start) || !graph.isValid(goal))
+	{
+		return { {}, false, 0 };
+	}
+	
 	switch (type)
 	{
 	case SearchType::BFS:
