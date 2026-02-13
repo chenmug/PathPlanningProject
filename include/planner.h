@@ -8,12 +8,11 @@
 
 /**
  * @enum SearchType
- * @brief Defines the search algorithm used by the Planner.
+ * @brief Specifies which pathfinding algorithm to use in the Planner.
  *
- * Specifies which pathfinding strategy will be applied:
  * - BFS: Unweighted breadth-first search (ignores edge weights)
- * - Dijkstra: Weighted shortest path search (considers accumulated path cost)
- * - AStar: Heuristic-guided shortest path search (uses accumulated cost + heuristic)
+ * - Dijkstra: Weighted shortest path search based on accumulated cost
+ * - AStar: Weighted search using accumulated cost + heuristic (f = g + h)
  */
 enum class SearchType
 {
@@ -24,35 +23,33 @@ enum class SearchType
 
 /**
  * @struct PlanResults
- * @brief Stores the result of a path planning execution.
+ * @brief Holds the results of a path planning execution.
  *
- * Contains the computed path (if found), an indication of success,
- * and the total path cost.
+ * - path: The computed path from start to goal, empty if none found
+ * - success: True if a path was found, false otherwise
+ * - totalCost: Total accumulated cost of the path
  *
- * If success is false:
- * - path will be empty
- * - totalCost may be set to 0 or INF (implementation-defined)
+ * If no path is found, `path` is empty and `totalCost` is 0.
  */
 struct PlanResults
 {
-    std::vector<State> path; // The computed path from start to goal
-    bool success;            // Indicates whether a valid path was found
-    int totalCost;           // Total accumulated cost of the path
+    std::vector<State> path; // Computed path from start to goal
+    bool success;            // True if a valid path exists
+    int totalCost;           // Total cost of the path
 };
 
 /**
  * @class Planner
  * @brief Computes a path between two states using graph search algorithms.
  *
- * The Planner class encapsulates classical pathfinding algorithms
- * over a given state-space graph (e.g., BFS, Dijkstra, A*).
+ * The Planner operates on a Graph instance and provides methods to compute paths
+ * from a start state to a goal state using BFS, Dijkstra, or A*.
  *
- * It is responsible for computing a valid path from a start state
- * to a goal state, if such a path exists.
+ * Responsibilities:
+ * - Compute paths in a state-space graph
+ * - Track total cost and path sequence
  *
- * The Planner does not modify the graph and does not perform
- * decision-making or simulation. It strictly performs path computation
- * based on graph connectivity and edge costs.
+ * The Planner does not modify the Graph and does not handle simulation or agent logic.
  */
 class Planner
 {
@@ -60,132 +57,113 @@ private:
     const Graph& graph; // The graph representing the world
 
     /**
-     * @brief Estimates the cost from one state to another.
+     * @struct PQCompare
+     * @brief Comparison operator function for priority queue (used in Dijkstra/A*).
      *
-     * Computes a Euclidean distance between state @p a and state @p b,
-     * assuming movement in all 8 directions (including diagonals).
+     * States with smaller priority (cost) come first.
+     */
+    struct PQCompare 
+    {
+        bool operator()(const std::pair<int, State>& a, const std::pair<int, State>& b) const
+        {
+            return a.first > b.first;
+        }
+    };
+
+    /**
+     * @brief Estimates cost from one state to another using Chebyshev distance.
      *
-     * This heuristic is admissible and consistent for A*, guaranteeing
-     * optimal paths when used with uniform cost.
+     * Assumes 8-direction movement (cardinal + diagonal) and is admissible for A*.
      *
-     * @param a The current state
-     * @param b The target state (goal)
+     * @param a Current state
+     * @param b Target state (goal)
      * 
-     * @return An estimated cost between the two states
+     * @return Estimated cost (integer)
      */
     int heuristic(const State& a, const State& b) const;
 
     /**
-     * @brief Executes Breadth-First Search (BFS).
+     * @brief Executes Breadth-First Search (BFS) from start to goal.
      *
-     * Performs an unweighted search over the graph, expanding states
-     * in increasing order of depth from the start state.
+     * Expands states in increasing order of depth (unweighted search).
      *
-     * @param start The starting state
-     * @param goal  The goal state
+     * @param start Starting state
+     * @param goal Goal state
      * 
-     * @return A PlanResults struct containing:
-     * - path: vector of states from start to goal, empty if no path
-     * - success: true if a valid path was found, false otherwise
-     * - totalCost: accumulated cost of the path, undefined if no path found
+     * @return PlanResults containing the path, success flag, and total path length
      */
     PlanResults runBFS(const State& start, const State& goal) const;
 
     /**
-     * @brief Executes a weighted shortest-path search.
+     * @brief Executes a weighted search algorithm (Dijkstra or A*).
      *
-     * Shared implementation for Dijkstra and A* algorithms.
+     * - Dijkstra: Expands nodes based on accumulated cost (g-value)
+     * - A*: Expands nodes based on g + heuristic (f-value)
      *
-     * - Dijkstra: expands states based on accumulated cost only (g-value)
-     * - A*: expands states based on accumulated cost + heuristic (f = g + h)
+     * Tracks parents for path reconstruction and priority queue for state ordering.
      *
-     * Maintains distance tracking, parent reconstruction,
-     * and priority queue ordering according to the selected strategy.
-     *
-     * @param start The starting state
-     * @param goal  The goal state
-     * @param type  Specifies whether to run Dijkstra or A*
+     * @param start Starting state
+     * @param goal Goal state
+     * @param type SearchType::Dijkstra or SearchType::AStar
      * 
-     * @return A PlanResults struct containing:
-     * - path: vector of states from start to goal, empty if no path
-     * - success: true if a valid path was found, false otherwise
-     * - totalCost: accumulated cost of the path, undefined if no path found
+     * @return PlanResults containing path, success flag, and total accumulated cost
      */
     PlanResults runWeightedSearch(const State& start, const State& goal, SearchType type) const;
 
     /**
-     * @brief Executes Dijkstra's shortest path algorithm.
+     * @brief Executes Dijkstra's shortest path search.
      *
-     * Finds the shortest path based on accumulated cost only.
      * Wrapper around runWeightedSearch with type = Dijkstra.
      *
-     * @param start The starting state
-     * @param goal  The goal state
+     * @param start Starting state
+     * @param goal Goal state
      * 
-     * @return A PlanResults struct containing:
-     * - path: vector of states from start to goal, empty if no path
-     * - success: true if a valid path was found, false otherwise
-     * - totalCost: accumulated cost of the path, undefined if no path found
+     * @return PlanResults containing path, success, and total cost
      */
     PlanResults runDijkstra(const State& start, const State& goal) const;
 
     /**
      * @brief Executes A* search algorithm.
      *
-     * Finds the shortest path using both accumulated cost and
-     * a Euclidean heuristic (f = g + h).
      * Wrapper around runWeightedSearch with type = AStar.
      *
-     * @param start The starting state
-     * @param goal  The goal state
+     * @param start Starting state
+     * @param goal Goal state
      * 
-     * @return A PlanResults struct containing:
-     * - path: vector of states from start to goal, empty if no path
-     * - success: true if a valid path was found, false otherwise
-     * - totalCost: accumulated cost of the path, undefined if no path found
+     * @return PlanResults containing path, success, and total cost
      */
     PlanResults runAStar(const State& start, const State& goal) const;
 
     /**
-     * @brief Reconstructs the path from goal to start using parent map.
+     * @brief Reconstructs the path from goal to start using parent mapping.
      *
-     * Traverses the parent map generated during search and builds
-     * the final path from start to goal.
+     * Traverses the parent map generated during search and builds the final path.
      *
-     * @param start The starting state
-     * @param goal  The goal state
-     * @param parents A mapping from each state to its predecessor
+     * @param start Starting state
+     * @param goal Goal state
+     * @param parents Map of child -> parent states
      * 
-     * @return A vector of states representing the reconstructed path
+     * @return Vector of states representing the reconstructed path; empty if no path
      */
     std::vector<State> reconstructPath(const State& start, const State& goal,
         const std::unordered_map<State, State>& parents) const;
 
 public:
     /**
-     * @brief Constructs a Planner using the given graph.
+     * @brief Constructs a Planner using a given graph.
      *
-     * The Planner does not take ownership of the graph and assumes that
-     * the graph remains valid for the lifetime of the Planner.
-     *
-     * @param graph Reference to the state-space graph
+     * @param graph Reference to the Graph (must remain valid for Planner's lifetime)
      */
     Planner(const Graph& graph);
 
     /**
-     * @brief Computes a path from a start state to a goal state.
+     * @brief Computes a path from start to goal using the specified algorithm.
      *
-     * Executes the selected graph search algorithm to find a valid
-     * path between the given start and goal states.
-     *
-     * @param start The starting state
-     * @param goal  The goal state
-     * @param type  The search algorithm to use (default is BFS)
+     * @param start Starting state
+     * @param goal Goal state
+     * @param type Search algorithm to use (default: BFS)
      * 
-     * @return A PlanResults struct containing:
-     * - path: vector of states from start to goal, empty if no path
-     * - success: true if a valid path was found, false otherwise
-     * - totalCost: accumulated cost of the path, undefined if no path found
+     * @return PlanResults containing path, success flag, and total cost
      */
     PlanResults plan(const State& start, const State& goal, SearchType type = SearchType::BFS) const;
 };

@@ -18,7 +18,7 @@ int Planner::heuristic(const State& a, const State& b) const
 	int dx = std::abs(a.x - b.x);
 	int dy = std::abs(a.y - b.y);
 
-	return std::max(dx, dy);
+	return std::max(dx, dy); // Chebyshev distance
 }
 
 
@@ -63,15 +63,13 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
 
 	if (parents.find(goal) == parents.end())
 	{
-		return PlanResults{ {}, false, 0 };
+		return { {}, false, 0 };
 	}
-	else
-	{
-		auto path = reconstructPath(start, goal, parents);
-		totalCost = static_cast<int>(path.size()) - 1;
+	
+	auto path = reconstructPath(start, goal, parents);
+	totalCost = static_cast<int>(path.size()) - 1;
 
-		return PlanResults{ path, true, totalCost };
-	}
+	return { path, true, totalCost };
 }
 
 
@@ -80,11 +78,7 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
 PlanResults Planner::runWeightedSearch(const State& start, const State& goal, SearchType type) const
 {
 	using PQElement = std::pair<int, State>;
-
-	// min-heap: smallest priority first
-	auto cmp = [](const PQElement& a, const PQElement& b) { return a.first > b.first; };
-	std::priority_queue<PQElement, std::vector<PQElement>, decltype(cmp)> pq(cmp);
-
+	std::priority_queue<PQElement, std::vector<PQElement>, PQCompare> pq;
 	std::unordered_map<State, int> g_cost;
 	std::unordered_map<State, State> parents;
 	State current = start;
@@ -93,7 +87,7 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
 
 	if (start == goal)
 	{
-		return PlanResults{ {start}, true, 0 };
+		return { {start}, true, 0 };
 	}
 
 	g_cost[start] = 0;
@@ -102,11 +96,8 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
 
 	while (!pq.empty())
 	{
-		PQElement elem = pq.top();
+		auto [priority, current] = pq.top();
 		pq.pop();
-
-		priority = elem.first;
-		current = elem.second;
 
 		if (current == goal)
 		{
@@ -135,11 +126,9 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
 	{
 		return { {}, false, 0 };
 	}
-	else
-	{
-		auto path = reconstructPath(start, goal, parents);
-		return { path, true, g_cost[goal] };
-	}
+	
+	auto path = reconstructPath(start, goal, parents);
+	return { path, true, g_cost[goal] };
 }
 
 
