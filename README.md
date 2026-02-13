@@ -1,6 +1,6 @@
 # Grid-Based Path Planning & Decision System (C++)
 
-**Status:** Work in Progress – BFS implemented, Dijkstra & A* planned  
+**Status:** Work in Progress – BFS, Dijkstra & A* implemented  
 
 A grid-based path planning and decision system implemented in modern C++, focusing on algorithmic design, clean object-oriented architecture, and low-level implementation from scratch. No external libraries are used (SFML optional for visualization).
 
@@ -25,26 +25,26 @@ World -> Graph -> Planner -> Decision -> Simulation
 **Responsibilities:**
 - **World:** Stores the grid as weighted cells. Free cells have weight 1, blocked cells use -1. Supports querying and updating weights, checking boundaries, and whether cells are walkable (`isFree`).
 - **State:** Represents discrete positions `(x, y)` in the grid and is used in all pathfinding algorithms.
-- **Graph:** Generates neighbors (8-directional) and movement costs.
-- **Planner:** Computes paths (BFS, Dijkstra, A*).
+- **Graph:** Generates neighbors (8-directional) and movement costs, handles blocked cells, and provides `getCost` for both cardinal and diagonal moves.
+- **Planner:** Computes paths using BFS (unweighted), Dijkstra (weighted), and A* (weighted with Chebyshev heuristic). Handles path reconstruction and total cost calculation.
 - **Decision:** Chooses goals and invokes the planner.
-- **Simulation:** Applies actions in discrete steps.
+- **Simulation:** Applies actions in discrete steps; optionally visualized with SFML.
 
 ---
 
 ## Algorithms
-- **Implemented:** BFS, parent-based path reconstruction, hash-based visited tracking, Dijkstra, A* with heuristics
-- Supports weighted edges and 8-directional movement
-- All implemented manually, no external libraries.
+- **Implemented:** BFS, Dijkstra, A* with heuristics, parent-based path reconstruction, hash-based visited tracking  
+- Supports weighted edges, 8-directional movement, and blocked/free cells (-1 = blocked, 1 = free)  
+- All implemented manually, no external libraries  
 
 ---
 
 ## Testing
 Unit and integration tests cover:
-- State: equality & hashing, default constructor, extreme values
-- World: grid initialization, default/free/blocked cells, boundary checks, weight updates, negative weight protection, clearGrid
-- Graph neighbor generation (8 directions) and cost calculations
-- Planner correctness & path validation
+- **State:** equality & hashing, default constructor, extreme values
+- **World:** grid initialization, default/free/blocked cells, boundary checks, weight updates, negative weight protection, `clearGrid`
+- **Graph:** neighbor generation (8 directions) and cost calculations
+- **Planner:** pathfinding correctness & path validation for BFS, Dijkstra, and A*
 - End-to-end system sanity
 
 ---
