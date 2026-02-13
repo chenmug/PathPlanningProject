@@ -36,7 +36,7 @@ int World::getWeight(const State& s) const
 {
     if (!inBounds(s.x, s.y))
     {
-        return INF;
+        return BLOCK;
     }
 
     return grid[s.y][s.x];
@@ -50,6 +50,11 @@ bool World::setWeight(const State& s, int weight)
     if (!inBounds(s.x, s.y))
     {
         return false;
+    }
+
+    if (weight < 0)
+    {
+        weight = BLOCK;
     }
 
     grid[s.y][s.x] = weight;
@@ -92,7 +97,7 @@ void World::printGrid() const
     {
         for (int x = 0; x < width; ++x) 
         {
-            if (grid[y][x] >= INF)
+            if (grid[y][x] >= BLOCK)
             {
                 std::cout << "# ";
             }

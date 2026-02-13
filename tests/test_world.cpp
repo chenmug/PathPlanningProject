@@ -2,33 +2,45 @@
 #include "state.h"
 #include "test_framework.h"
 
-
+// --------------------
+// WORLD DIMENSIONS
+// --------------------
 void testWorldDimensions()
 {
-    World world(10, 10);
-    check(world.getWidth() == 10 && world.getHeight() == 10, "world dimensions");
+    World world(10, 15);
+    check(world.getWidth() == 10 && world.getHeight() == 15, "world dimensions");
 }
 
 
+// --------------------
+// WORLD BOUNDARIES
+// --------------------
 void testWorldBoundaries()
 {
-    World world(10, 10);
-    State inside{ 5, 5 };
+    World world(5, 5);
+    State inside{ 0, 0 };
+    State inside2{ 4, 4 };
+
+    // out boundaries
     State negX{ -1, 0 };
     State negY{ 0, -1 };
-    State outX{ 10, 0 };
-    State outY{ 0, 10 };
+    State outX{ 5, 0 };
+    State outY{ 0, 5 };
 
     bool passed = world.isFree(inside) &&
+        world.isFree(inside2) &&
         !world.isFree(negX) &&
         !world.isFree(negY) &&
         !world.isFree(outX) &&
         !world.isFree(outY);
 
-    check(passed, "world boundaries");
+    check(passed, "world boundaries including corners");
 }
 
 
+// --------------------
+// WORLD SET/GET
+// --------------------
 void testWorldSetAndGetWeight()
 {
     World world(5, 5);
@@ -39,58 +51,89 @@ void testWorldSetAndGetWeight()
     passed &= world.getWeight(s) == World::FREE;
     passed &= world.setWeight(s, 10);
     passed &= world.getWeight(s) == 10;
-    passed &= !world.setWeight(out, 5); // out-of-bounds fails
 
-    check(passed, "set and get weight");
+    // change weight - out of boundary cell
+    passed &= !world.setWeight(out, 5);
+
+    // change weight to 0
+    passed &= world.setWeight(s, 0);
+    passed &= world.getWeight(s) == 0;
+
+    // change weight to BLOCK
+    passed &= world.setWeight(s, World::BLOCK);
+    passed &= world.getWeight(s) == World::BLOCK;
+
+    check(passed, "set and get weight including BLOCK and 0");
 }
 
 
-void testWorldIsFree()
+// ---------------------
+// MULTIPLE BLOCK CELLS
+// ---------------------
+void testWorldMultipleBlockedCells()
 {
-    World world(5, 5);
-    State s{ 1, 1 };
-    State blocked{ 2, 2 };
+    World world(3, 3);
+    State s1{ 0,0 }, s2{ 1,1 }, s3{ 2,2 };
 
-    world.setWeight(blocked, World::INF);
+    world.setWeight(s1, World::BLOCK);
+    world.setWeight(s2, World::BLOCK);
 
-    bool passed = world.isFree(s) && !world.isFree(blocked);
-    check(passed, "isFree with weights and blocked cells");
+    bool passed = !world.isFree(s1) && !world.isFree(s2) && world.isFree(s3);
+    check(passed, "multiple blocked cells");
 }
 
 
+// --------------------
+// CLEAR GRID
+// --------------------
 void testWorldClearGrid()
 {
-    World world(5, 5);
-    State s1{ 0, 0 }, s2{ 4, 4 };
-    int x = 0;
-    int y = 0;
+    World world(4, 4);
+    State s1{ 0,0 }, s2{ 3,3 }, s3{ -1,-1 };
     bool passed = true;
 
-    world.setWeight(s1, World::INF);
+    world.setWeight(s1, World::BLOCK);
     world.setWeight(s2, 50);
     world.clearGrid();
 
-    for (x = 0; x < world.getWidth(); ++x) 
+    for (int y = 0; y < world.getHeight(); ++y)
     {
-        for (y = 0; y < world.getHeight(); ++y) 
+        for (int x = 0; x < world.getWidth(); ++x)
         {
-            if (!world.isFree(State{ x, y }) || world.getWeight(State{ x, y }) != World::FREE) 
+            s3.x = x;
+            s3.y = y;
+
+            if (!world.isFree(s3) || world.getWeight(s3) != World::FREE)
             {
                 passed = false;
                 break;
             }
         }
-
-        if (!passed)
-        {
-            break;
-        }
+        if (!passed) break;
     }
 
-    check(passed, "clearGrid resets all weights to FREE");
+    check(passed, "clearGrid resets all cells to FREE");
 }
 
 
+// --------------------
+// NEGATIVE WEIGHT
+// --------------------
+void testWorldNegativeWeightProtection()
+{
+    World world(3, 3);
+    State s{ 1,1 };
+    bool passed = true;
+
+    world.setWeight(s, -5);
+    passed = world.getWeight(s) == World::BLOCK; 
+    check(passed, "negative weights automatically treated as BLOCK");
+}
+
+
+// --------------------
+// RUN WORLD TESTS
+// --------------------
 void runWorldTests()
 {
     testHeader("WORLD TESTS");
@@ -98,6 +141,7 @@ void runWorldTests()
     testWorldDimensions();
     testWorldBoundaries();
     testWorldSetAndGetWeight();
-    testWorldIsFree();
+    testWorldMultipleBlockedCells();
     testWorldClearGrid();
+    testWorldNegativeWeightProtection();
 }

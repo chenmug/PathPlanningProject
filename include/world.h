@@ -11,29 +11,20 @@
  *
  * The World class is responsible for storing the environment grid,
  * including weights for each cell, and determining whether a cell is free (walkable)
- * or blocked (very high weight).
+ * or blocked.
  *
  * It does not handle agent logic, path planning, or decision-making.
  */
 class World 
 {
 public:
-    static const int INF = 1000000;  /// Represents a blocked cell (obstacle)
-
-    /**
-     * @enum CellType
-     * @brief Defines types of cells for better readability.
-     */
-    enum CellType 
-    {
-        FREE = 1,     // Walkable cell
-        BLOCK = INF   // Obstacle
-    };
+    static const int BLOCK = -1; // Represents a blocked cell (obstacle)
+    static const int FREE = 1;   // Default weight for free cells
 
 private:
-    int width;  // Width of the world (number of columns)
-    int height; // Height of the world (number of rows)
-    std::vector<std::vector<int>> grid;  // Grid storing weights for each cell
+    int width;                          // Width of the world (number of columns)
+    int height;                         // Height of the world (number of rows)
+    std::vector<std::vector<int>> grid; // Grid storing weights for each cell
 
     /**
      * @brief Checks if the given coordinates are within world boundaries.
@@ -42,6 +33,7 @@ private:
      *
      * @param x X-coordinate
      * @param y Y-coordinate
+     * 
      * @return true if (x, y) is inside the grid, false otherwise
      */
     bool inBounds(int x, int y) const;
@@ -77,7 +69,8 @@ public:
      *
      * Retrieves the weight (or movement cost) of the specified cell based on its state.
      *
-     * @param s The state of the cell, which includes its position in the grid.
+     * @param s The state of the cell.
+     * 
      * @return Weight of the cell
      */
     int getWeight(const State& s) const;
@@ -87,8 +80,9 @@ public:
      *
      * Updates the weight (movement cost) for the specified cell, using its state.
      *
-     * @param s The state of the cell, which includes its position in the grid.
-     * @param weight The new weight to assign to the cell
+     * @param s The state of the cell.
+     * @param weight The new weight to assign to the cell.
+     * 
      * @return true if the cell exists and was updated, false if out of bounds
      */
     bool setWeight(const State& s, int weight);
@@ -96,10 +90,11 @@ public:
     /**
      * @brief Checks whether a given cell is free (walkable).
      *
-     * Determines if the specified cell is free (walkable), meaning its weight is less than INF
+     * Determines if the specified cell is free (walkable), meaning its weight is not -1
      * and it is within the grid boundaries.
      *
-     * @param s The state of the cell, which includes its position in the grid.
+     * @param s The state of the cell.
+     * 
      * @return true if the cell is free (walkable), false otherwise
      */
     bool isFree(const State& s) const;
