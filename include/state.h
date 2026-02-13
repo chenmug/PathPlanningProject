@@ -19,6 +19,28 @@ struct State
 	int x;  // X-coordinate (column index)
 	int y;  // Y-coordinate (row index)
 
+
+	/**
+	 * @brief Constructs a State with the given grid coordinates.
+	 *
+	 * Initializes a State object representing a specific position
+	 * in the grid world by setting its x (column) and y (row) coordinates.
+	 *
+	 * @param x The X-coordinate (column index) of the state.
+	 * @param y The Y-coordinate (row index) of the state.
+	 */
+	State(int x, int y) : x(x), y(y) {};
+
+	/**
+	 * @brief Default constructor for State.
+	 *
+	 * Initializes a State object to the origin of the grid (0, 0).
+	 * This constructor is useful when a state needs to be declared
+	 * before its actual coordinates are known, or when a placeholder
+	 * state is required.
+	 */
+	State() : x(0), y(0) {};
+
     /**
 	 * @brief Compares two State objects for equality.
 	 *
@@ -51,7 +73,7 @@ struct State
 	 */
 	bool operator!=(const State& other) const
 	{
-		return (x != other.x || y != other.y);
+		return !(*this == other);
 	}
 };
 
