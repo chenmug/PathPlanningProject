@@ -289,6 +289,31 @@ void testAStarOptimalPath()
 }
 
 
+// ----------------------------------------
+// FULLY BLOCKED WORLD
+// ----------------------------------------
+void testPlannerFullyBlockedWorld()
+{
+    World world(3, 3);
+    Graph graph(&world);
+    Planner planner(graph);
+    State start{ 0, 0 }, goal{ 2, 2 };
+
+    for (int x = 0; x < 3; ++x)
+    {
+        for (int y = 0; y < 3; ++y)
+        {
+            world.setWeight({ x, y }, World::BLOCK);
+        }
+    }
+
+    auto result = planner.plan(start, goal, SearchType::Dijkstra);
+
+    check(!result.success, "fully blocked: success == false");
+    check(result.path.empty(), "fully blocked: path empty");
+}
+
+
 // --------------------
 // PLANNER RUN TESTS
 // --------------------
@@ -307,4 +332,5 @@ void runPlannerTests()
     testBlockedGoal();
     testBFSReturnsShortestPathLength();
     testAStarOptimalPath();
+    testPlannerFullyBlockedWorld();
 }

@@ -12,5 +12,6 @@ int main()
     runPlannerTests();
 
     printSummary();
+
     return 0;
 }
