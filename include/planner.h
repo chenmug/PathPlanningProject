@@ -35,7 +35,7 @@ struct PlanResults
 {
     std::vector<State> path; // Computed path from start to goal
     bool success;            // True if a valid path exists
-    int totalCost;           // Total cost of the path
+    double totalCost;        // Total cost of the path
 };
 
 /**
@@ -64,7 +64,7 @@ private:
      */
     struct PQCompare 
     {
-        bool operator()(const std::pair<int, State>& a, const std::pair<int, State>& b) const
+        bool operator()(const std::pair<double, State>& a, const std::pair<double, State>& b) const
         {
             return a.first > b.first;
         }
@@ -73,14 +73,15 @@ private:
     /**
      * @brief Estimates cost from one state to another using Chebyshev distance.
      *
-     * Assumes 8-direction movement (cardinal + diagonal) and is admissible for A*.
+     * Chebyshev distance is chosen because movement is allowed in 8 directions
+     * (cardinal + diagonal), so the heuristic remains admissible and consistent for A*.
      *
      * @param a Current state
      * @param b Target state (goal)
-     * 
-     * @return Estimated cost (integer)
+     *
+     * @return Estimated cost
      */
-    int heuristic(const State& a, const State& b) const;
+    double heuristic(const State& a, const State& b) const;
 
     /**
      * @brief Executes Breadth-First Search (BFS) from start to goal.
