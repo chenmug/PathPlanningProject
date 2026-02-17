@@ -105,27 +105,27 @@ void testGraphCost()
     world.setWeight(blocked, World::BLOCK);
 
     // Cardinal move
-    int cost = graph.getCost(from, toCard);
-    check(cost == 3, "getCost cardinal move");
+    double cost = graph.getCost(from, toCard);
+    check(std::abs(cost - 3.0) < 1e-6, "getCost cardinal move");
 
     // Diagonal move
     cost = graph.getCost(from, toDiag);
-    int expectedDiag = int(graph.DIAGONAL_COST * world.getWeight(toDiag));
-    check(cost == expectedDiag, "getCost diagonal move");
+    double expectedDiag = Graph::DIAGONAL_COST * world.getWeight(toDiag);
+    check(std::abs(cost - expectedDiag) < 1e-6, "getCost diagonal move");
 
     // Blocked neighbor
     cost = graph.getCost(from, blocked);
-    check(cost == World::BLOCK, "getCost blocked cell");
+    check(std::abs(cost - World::BLOCK) < 1e-6, "getCost blocked cell");
 
     // Non-neighbor
     cost = graph.getCost(from, nonNeighbor);
-    check(cost == graph.NOT_NEIGHBOR, "getCost non-neighbor cell");
+    check(std::abs(cost - Graph::NOT_NEIGHBOR) < 1e-6, "getCost non-neighbor cell");
 
     // Out-of-bounds
     State outX{ 4,1 };
     State outY{ 1,4 };
-    check(graph.getCost(from, outX) == -1, "getCost out-of-bounds X");
-    check(graph.getCost(from, outY) == -1, "getCost out-of-bounds Y");
+    check(std::abs(graph.getCost(from, outX) - World::BLOCK) < 1e-6, "getCost out-of-bounds X");
+    check(std::abs(graph.getCost(from, outY) - World::BLOCK) < 1e-6, "getCost out-of-bounds Y");
 }
 
 

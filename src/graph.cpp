@@ -38,7 +38,7 @@ std::vector<State> Graph::getNeighbors(const State& state) const
 
 /***************** GET COST *****************/
 
-int Graph::getCost(const State& from, const State& to) const
+double Graph::getCost(const State& from, const State& to) const
 {
 	int dx = 0;
 	int dy = 0;
@@ -58,7 +58,7 @@ int Graph::getCost(const State& from, const State& to) const
 
 	if (dx + dy == 2)
 	{
-		return int(DIAGONAL_COST * world->getWeight(to));  // diagonal
+		return DIAGONAL_COST * world->getWeight(to);  // diagonal
 	}
 
 	else
