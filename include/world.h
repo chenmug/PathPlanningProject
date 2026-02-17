@@ -73,7 +73,7 @@ public:
      * 
      * @return Weight of the cell
      */
-    int getWeight(const State& s) const;
+    double getWeight(const State& s) const;
 
     /**
      * @brief Sets the weight (movement cost) of a given cell.

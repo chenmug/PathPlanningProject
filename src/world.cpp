@@ -32,7 +32,7 @@ int World::getHeight() const
 
 /***************** GET WEIGHT *****************/
 
-int World::getWeight(const State& s) const
+double World::getWeight(const State& s) const
 {
     if (!inBounds(s.x, s.y))
     {
