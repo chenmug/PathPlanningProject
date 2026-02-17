@@ -25,17 +25,22 @@ enum class SearchType
  * @struct PlanResults
  * @brief Holds the results of a path planning execution.
  *
- * - path: The computed path from start to goal, empty if none found
+ * - path: The computed path from start to goal (empty if not found)
  * - success: True if a path was found, false otherwise
- * - totalCost: Total accumulated cost of the path
+ * - totalCost: Total accumulated cost of the path (0 if no path)
+ * - executionTime: Time taken to compute the plan (in milliseconds)
  *
- * If no path is found, `path` is empty , success if false and `totalCost` is 0.
+ * If no path is found:
+ * - path is empty
+ * - success is false
+ * - totalCost is 0
  */
 struct PlanResults
 {
     std::vector<State> path; // Computed path from start to goal
     bool success;            // True if a valid path exists
     double totalCost;        // Total cost of the path
+    double executionTime;    // Time taken (milliseconds)
 };
 
 /**
@@ -46,8 +51,10 @@ struct PlanResults
  * from a start state to a goal state using BFS, Dijkstra, or A*.
  *
  * Responsibilities:
- * - Compute paths in a state-space graph
- * - Track total cost and path sequence
+ * - Execute search algorithms
+ * - Compute total path cost
+ * - Measure execution time
+ * - Reconstruct the final path
  *
  * The Planner does not modify the Graph and does not handle simulation or agent logic.
  */
@@ -91,7 +98,7 @@ private:
      * @param start Starting state
      * @param goal Goal state
      * 
-     * @return PlanResults containing the path, success flag, and total path length
+     * @return PlanResults containing the path, success flag, total path length and execution time
      */
     PlanResults runBFS(const State& start, const State& goal) const;
 
@@ -107,7 +114,7 @@ private:
      * @param goal Goal state
      * @param type SearchType::Dijkstra or SearchType::AStar
      * 
-     * @return PlanResults containing path, success flag, and total accumulated cost
+     * @return PlanResults containing path, success flag, total accumulated cost and execution time
      */
     PlanResults runWeightedSearch(const State& start, const State& goal, SearchType type) const;
 
@@ -119,7 +126,7 @@ private:
      * @param start Starting state
      * @param goal Goal state
      * 
-     * @return PlanResults containing path, success, and total cost
+     * @return PlanResults containing path, success, total cost and execution time
      */
     PlanResults runDijkstra(const State& start, const State& goal) const;
 
@@ -131,7 +138,7 @@ private:
      * @param start Starting state
      * @param goal Goal state
      * 
-     * @return PlanResults containing path, success, and total cost
+     * @return PlanResults containing path, success, total cost and execution time
      */
     PlanResults runAStar(const State& start, const State& goal) const;
 
@@ -160,11 +167,17 @@ public:
     /**
      * @brief Computes a path from start to goal using the specified algorithm.
      *
+     * Executes the selected search algorithm and measures its execution time.
+     *
      * @param start Starting state
      * @param goal Goal state
      * @param type Search algorithm to use (default: BFS)
-     * 
-     * @return PlanResults containing path, success flag, and total cost
+     *
+     * @return PlanResults containing:
+     * - path
+     * - success flag
+     * - total cost
+     * - execution time (ms)
      */
     PlanResults plan(const State& start, const State& goal, SearchType type = SearchType::BFS) const;
 };

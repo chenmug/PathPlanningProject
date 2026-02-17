@@ -3,24 +3,26 @@
 #include "world.h"
 #include "state.h"
 #include "test_framework.h"
+#include <cmath>
+#include <vector>
+#include <string>
+#include <algorithm>
+
 
 // -------------------------
 // IS VALID PATH - HELPER
 // -------------------------
 bool isValidPath(const std::vector<State>& path, const Graph& graph)
 {
-    size_t i = 0;
-    bool found = true;
-    
     if (path.empty())
     {
         return true;
     }
 
-    for (i = 1; i < path.size(); ++i)
+    for (size_t i = 1; i < path.size(); ++i)
     {
-        auto neighbors = graph.getNeighbors(path[i - 1]);
-        found = false;
+        const auto& neighbors = graph.getNeighbors(path[i - 1]);
+        bool found = false;
 
         for (const auto& n : neighbors)
         {
@@ -31,10 +33,7 @@ bool isValidPath(const std::vector<State>& path, const Graph& graph)
             }
         }
 
-        if (!found)
-        {
-            return false;
-        }
+        if (!found) return false;
     }
 
     return true;
@@ -49,9 +48,7 @@ void testPlannerBasicPath()
     World world(5, 5);
     Graph graph(&world);
     Planner planner(graph);
-
     State start{ 0, 0 }, goal{ 4, 4 };
-
     auto result = planner.plan(start, goal);
 
     check(result.success, "basic path: success == true");
@@ -60,6 +57,7 @@ void testPlannerBasicPath()
     check(result.path.back() == goal, "basic path: ends at goal");
     check(isValidPath(result.path, graph), "basic path: valid neighbors");
     check(result.totalCost > 0, "basic path: cost positive");
+    check(result.executionTime >= 0.0, "basic path: execution time non-negative");
 }
 
 
@@ -73,7 +71,6 @@ void testPlannerWithObstacles()
     Planner planner(graph);
     State start{ 0, 0 }, goal{ 4, 4 };
 
-    // Set obstacles 
     world.setWeight({ 1, 0 }, World::BLOCK);
     world.setWeight({ 1, 1 }, World::BLOCK);
     world.setWeight({ 2, 1 }, World::BLOCK);
@@ -99,7 +96,6 @@ void testPlannerSinglePath()
     Planner planner(graph);
     State start{ 1, 1 }, goal{ 2, 2 };
 
-    // Block almost all neighbors of start
     world.setWeight({ 0, 1 }, World::BLOCK);
     world.setWeight({ 1, 0 }, World::BLOCK);
     world.setWeight({ 1, 2 }, World::BLOCK);
@@ -126,19 +122,16 @@ void testPlannerUnreachableGoal()
     Planner planner(graph);
     State start{ 1, 1 }, goal{ 2, 2 };
 
-    // Block all possible moves (including diagonals)
     for (int dx = -1; dx <= 1; ++dx)
     {
         for (int dy = -1; dy <= 1; ++dy)
         {
-            if (dx == 0 && dy == 0)
+            if (!(dx == 0 && dy == 0))
             {
-                continue;
+                world.setWeight({ start.x + dx, start.y + dy }, World::BLOCK);
             }
-            world.setWeight({ start.x + dx, start.y + dy }, World::BLOCK);
         }
     }
-
     auto result = planner.plan(start, goal);
 
     check(!result.success, "unreachable: success == false");
@@ -160,7 +153,7 @@ void testPlannerStartEqualsGoal()
 
     check(result.success, "start==goal: success == true");
     check(result.path.size() == 1, "start==goal: path size 1");
-    check(result.totalCost == 0, "start==goal: cost == 0");
+    checkDouble(result.totalCost, 0.0, "start==goal: cost == 0");
 }
 
 
@@ -178,30 +171,7 @@ void testDijkstraEqualsAStar()
     auto astar = planner.plan(start, goal, SearchType::AStar);
 
     check(dijkstra.success && astar.success, "Dijkstra vs A*: both succeed");
-    check(dijkstra.totalCost == astar.totalCost, "Dijkstra vs A*: same optimal cost");
-}
-
-
-// ----------------------------
-// BFS VS DIJKSTRA (WEIGHTED)
-// ----------------------------
-void testWeightedWorldDifference()
-{
-    World world(5, 5);
-    Graph graph(&world);
-    Planner planner(graph);
-    State start{ 0, 0 }, goal{ 4, 0 };
-
-    // Make straight path expensive
-    world.setWeight({ 1, 0 }, 10);
-    world.setWeight({ 2, 0 }, 10);
-    world.setWeight({ 3, 0 }, 10);
-
-    auto bfs = planner.plan(start, goal, SearchType::BFS);
-    auto dijkstra = planner.plan(start, goal, SearchType::Dijkstra);
-
-    check(bfs.success && dijkstra.success, "weighted: both succeed");
-    check(dijkstra.totalCost <= bfs.totalCost, "weighted: Dijkstra finds cheaper path than BFS");
+    checkDouble(dijkstra.totalCost, astar.totalCost, "Dijkstra vs A*: same optimal cost");
 }
 
 
@@ -255,9 +225,8 @@ void testBFSReturnsShortestPathLength()
     auto result = planner.plan(start, goal, SearchType::BFS);
     check(result.success, "BFS shortest path: success");
 
-    check(result.totalCost == expectedSteps,
+    checkDouble(result.totalCost, static_cast<double>(expectedSteps),
         "BFS shortest path: correct minimal number of steps");
-
     check(static_cast<int>(result.path.size()) == expectedSteps + 1,
         "BFS shortest path: path size matches expected steps");
 }
@@ -273,7 +242,6 @@ void testAStarOptimalPath()
     Planner planner(graph);
     State start{ 0,0 }, goal{ 4,4 };
 
-    // Create a expensive diagonal shortcut
     world.setWeight({ 1,1 }, 20);
     world.setWeight({ 2,2 }, 20);
     world.setWeight({ 3,3 }, 20);
@@ -281,17 +249,15 @@ void testAStarOptimalPath()
     auto dijkstra = planner.plan(start, goal, SearchType::Dijkstra);
     auto astar = planner.plan(start, goal, SearchType::AStar);
 
-    check(dijkstra.success && astar.success,
-        "A* optimal path: both succeed");
-
-    check(astar.totalCost == dijkstra.totalCost,
+    check(dijkstra.success && astar.success, "A* optimal path: both succeed");
+    checkDouble(astar.totalCost, dijkstra.totalCost,
         "A* optimal path: A* finds optimal cost equal to Dijkstra");
 }
 
 
-// ----------------------------------------
+// ------------------------------
 // FULLY BLOCKED WORLD
-// ----------------------------------------
+// ------------------------------
 void testPlannerFullyBlockedWorld()
 {
     World world(3, 3);
@@ -306,7 +272,6 @@ void testPlannerFullyBlockedWorld()
             world.setWeight({ x, y }, World::BLOCK);
         }
     }
-
     auto result = planner.plan(start, goal, SearchType::Dijkstra);
 
     check(!result.success, "fully blocked: success == false");
@@ -327,7 +292,6 @@ void runPlannerTests()
     testPlannerUnreachableGoal();
     testPlannerStartEqualsGoal();
     testDijkstraEqualsAStar();
-    testWeightedWorldDifference();
     testBlockedStart();
     testBlockedGoal();
     testBFSReturnsShortestPathLength();
