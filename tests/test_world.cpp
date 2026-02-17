@@ -1,11 +1,21 @@
 #include "world.h"
 #include "state.h"
 #include "test_framework.h"
+#include <cmath>
+
+
+// ---------------------------------------
+// HELPER FUNCTION FOR COMPARING DOUBLES
+// ---------------------------------------
+bool almostEqual(double a, double b, double eps = 1e-6) 
+{
+    return std::abs(a - b) < eps;
+}
 
 // --------------------
 // WORLD DIMENSIONS
 // --------------------
-void testWorldDimensions()
+void testWorldDimensions() 
 {
     World world(10, 15);
     check(world.getWidth() == 10 && world.getHeight() == 15, "world dimensions");
@@ -15,13 +25,13 @@ void testWorldDimensions()
 // --------------------
 // WORLD BOUNDARIES
 // --------------------
-void testWorldBoundaries()
+void testWorldBoundaries() 
 {
     World world(5, 5);
     State inside{ 0, 0 };
     State inside2{ 4, 4 };
 
-    // out boundaries
+    // out of boundaries
     State negX{ -1, 0 };
     State negY{ 0, -1 };
     State outX{ 5, 0 };
@@ -38,40 +48,46 @@ void testWorldBoundaries()
 }
 
 
-// --------------------
-// WORLD SET/GET
-// --------------------
-void testWorldSetAndGetWeight()
+// ---------------------
+// WORLD SET/GET WEIGHT
+// ---------------------
+void testWorldSetAndGetWeight() 
 {
     World world(5, 5);
     State s{ 2, 2 };
     State out{ -1, 0 };
     bool passed = true;
 
-    passed &= world.getWeight(s) == World::FREE;
-    passed &= world.setWeight(s, 10);
-    passed &= world.getWeight(s) == 10;
+    // default value
+    passed &= almostEqual(world.getWeight(s), World::FREE);
 
-    // change weight - out of boundary cell
-    passed &= !world.setWeight(out, 5);
-    passed &= world.getWeight(out) == World::BLOCK;
+    // double weight
+    passed &= world.setWeight(s, 10.0);
+    passed &= almostEqual(world.getWeight(s), 10.0);
 
-    // change weight to 0
-    passed &= world.setWeight(s, 0);
-    passed &= world.getWeight(s) == 0;
+    passed &= world.setWeight(s, 5.5);
+    passed &= almostEqual(world.getWeight(s), 5.5);
 
-    // change weight to BLOCK
+    // out of bounds
+    passed &= !world.setWeight(out, 5.0);
+    passed &= almostEqual(world.getWeight(out), World::BLOCK);
+
+    // zero weight
+    passed &= world.setWeight(s, 0.0);
+    passed &= almostEqual(world.getWeight(s), 0.0);
+
+    // blocked
     passed &= world.setWeight(s, World::BLOCK);
-    passed &= world.getWeight(s) == World::BLOCK;
+    passed &= almostEqual(world.getWeight(s), World::BLOCK);
 
-    check(passed, "set and get weight including BLOCK, 0 and out of boundary cells");
+    check(passed, "set and get weight including BLOCK, 0, double weights, out of boundary cells");
 }
 
 
 // ---------------------
 // MULTIPLE BLOCK CELLS
 // ---------------------
-void testWorldMultipleBlockedCells()
+void testWorldMultipleBlockedCells() 
 {
     World world(3, 3);
     State s1{ 0,0 }, s2{ 1,1 }, s3{ 2,2 };
@@ -87,24 +103,24 @@ void testWorldMultipleBlockedCells()
 // --------------------
 // CLEAR GRID
 // --------------------
-void testWorldClearGrid()
+void testWorldClearGrid() 
 {
     World world(4, 4);
     State s1{ 0,0 }, s2{ 3,3 }, s3{ -1,-1 };
     bool passed = true;
 
     world.setWeight(s1, World::BLOCK);
-    world.setWeight(s2, 50);
+    world.setWeight(s2, 50.5);
     world.clearGrid();
 
-    for (int y = 0; y < world.getHeight(); ++y)
+    for (int y = 0; y < world.getHeight(); ++y) 
     {
-        for (int x = 0; x < world.getWidth(); ++x)
+        for (int x = 0; x < world.getWidth(); ++x) 
         {
             s3.x = x;
             s3.y = y;
 
-            if (!world.isFree(s3) || world.getWeight(s3) != World::FREE)
+            if (!world.isFree(s3) || !almostEqual(world.getWeight(s3), World::FREE)) 
             {
                 passed = false;
                 break;
@@ -117,17 +133,18 @@ void testWorldClearGrid()
 }
 
 
-// --------------------
-// NEGATIVE WEIGHT
-// --------------------
-void testWorldNegativeWeightProtection()
+// ---------------------------
+// NEGATIVE WEIGHT PROTECTION
+// ---------------------------
+void testWorldNegativeWeightProtection() 
 {
     World world(3, 3);
     State s{ 1,1 };
     bool passed = true;
 
-    world.setWeight(s, -5);
-    passed = world.getWeight(s) == World::BLOCK; 
+    world.setWeight(s, -5.0);
+    passed = almostEqual(world.getWeight(s), World::BLOCK);
+
     check(passed, "negative weights automatically treated as BLOCK");
 }
 
@@ -135,7 +152,7 @@ void testWorldNegativeWeightProtection()
 // --------------------
 // RUN WORLD TESTS
 // --------------------
-void runWorldTests()
+void runWorldTests() 
 {
     testHeader("WORLD TESTS");
 

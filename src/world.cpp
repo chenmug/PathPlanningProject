@@ -3,7 +3,7 @@
 
 /***************** CONSTRUCTOR *****************/
 
-World::World(int w, int h) : width(w), height(h), grid(h, std::vector<int>(w, FREE)) {}
+World::World(int w, int h) : width(w), height(h), grid(h, std::vector<double>(w, FREE)) {}
 
 
 /****************** IS BOUNDS ******************/
@@ -45,7 +45,7 @@ double World::getWeight(const State& s) const
 
 /***************** SET WEIGHT ****************/
 
-bool World::setWeight(const State& s, int weight)
+bool World::setWeight(const State& s, double weight)
 {
     if (!inBounds(s.x, s.y))
     {

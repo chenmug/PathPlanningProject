@@ -18,13 +18,13 @@
 class World 
 {
 public:
-    static const int BLOCK = -1; // Represents a blocked cell (obstacle)
-    static const int FREE = 1;   // Default weight for free cells
+    static constexpr double BLOCK = -1.0; // Represents a blocked cell (obstacle)
+    static constexpr double FREE = 1.0;  // Default weight for free cells
 
 private:
-    int width;                          // Width of the world (number of columns)
-    int height;                         // Height of the world (number of rows)
-    std::vector<std::vector<int>> grid; // Grid storing weights for each cell
+    int width;                             // Width of the world (number of columns)
+    int height;                            // Height of the world (number of rows)
+    std::vector<std::vector<double>> grid; // Grid storing weights for each cell
 
     /**
      * @brief Checks if the given coordinates are within world boundaries.
@@ -71,7 +71,7 @@ public:
      *
      * @param s The state of the cell.
      * 
-     * @return Weight of the cell
+     * @return Weight of the cell (double)
      */
     double getWeight(const State& s) const;
 
@@ -81,11 +81,11 @@ public:
      * Updates the weight (movement cost) for the specified cell, using its state.
      *
      * @param s The state of the cell.
-     * @param weight The new weight to assign to the cell.
+     * @param weight The new weight to assign to the cell (double)
      * 
      * @return true if the cell exists and was updated, false if out of bounds
      */
-    bool setWeight(const State& s, int weight);
+    bool setWeight(const State& s, double weight);
 
     /**
      * @brief Checks whether a given cell is free (walkable).
@@ -100,7 +100,7 @@ public:
     bool isFree(const State& s) const;
 
     /**
-     * @brief Resets all cells to default weight (1 = free).
+     * @brief Resets all cells to default weight (1.0 = free).
      */
     void clearGrid();
 };
