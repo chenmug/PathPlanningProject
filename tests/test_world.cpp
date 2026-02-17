@@ -54,6 +54,7 @@ void testWorldSetAndGetWeight()
 
     // change weight - out of boundary cell
     passed &= !world.setWeight(out, 5);
+    passed &= world.getWeight(out) == World::BLOCK;
 
     // change weight to 0
     passed &= world.setWeight(s, 0);
@@ -63,7 +64,7 @@ void testWorldSetAndGetWeight()
     passed &= world.setWeight(s, World::BLOCK);
     passed &= world.getWeight(s) == World::BLOCK;
 
-    check(passed, "set and get weight including BLOCK and 0");
+    check(passed, "set and get weight including BLOCK, 0 and out of boundary cells");
 }
 
 

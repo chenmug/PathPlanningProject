@@ -3,7 +3,7 @@
 
 /***************** CONSTRUCTOR *****************/
 
-World::World(int w, int h) : width(w), height(h),grid(w, std::vector<int>(h, FREE)) {}
+World::World(int w, int h) : width(w), height(h), grid(h, std::vector<int>(w, FREE)) {}
 
 
 /****************** IS BOUNDS ******************/
@@ -81,32 +81,6 @@ void World::clearGrid()
 {
     for (auto& row : grid)
     {
-        for (auto& cell : row)
-        {
-            cell = FREE;
-        }
-    }
-}
-
-
-/***************** PRINT GRID *****************/
-
-void World::printGrid() const 
-{
-    for (int y = 0; y < height; ++y) 
-    {
-        for (int x = 0; x < width; ++x) 
-        {
-            if (grid[y][x] >= BLOCK)
-            {
-                std::cout << "# ";
-            }
-            else
-            {
-                std::cout << ". ";
-            }
-        }
-
-        std::cout << '\n';
+        std::fill(row.begin(), row.end(), FREE);
     }
 }

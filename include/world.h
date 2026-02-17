@@ -103,11 +103,6 @@ public:
      * @brief Resets all cells to default weight (1 = free).
      */
     void clearGrid();
-
-    /**
-     * @brief Prints the grid to the console (for debugging)
-     */
-    void printGrid() const;
 };
 
 #endif // WORLD_H
