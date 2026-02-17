@@ -17,15 +17,11 @@ class Graph
 {
 private:
     const World* world;  // Pointer to the world; Graph does not own it.
-
-    /**
-     * @brief Possible moves including diagonals.
-     */
-    static const std::vector<State> moves;
+    static const std::vector<State> moves; // Possible moves including diagonals.
 
 public:
     static constexpr double DIAGONAL_COST = 1.4142; // diagonal move multiplier
-    static const int NOT_NEIGHBOR = -2; // non-neighbor state
+    static constexpr int NOT_NEIGHBOR = -2; // non-neighbor state
 
     /**
      * @brief Constructs a graph using the given world.
@@ -55,7 +51,7 @@ public:
      * - Returns `DIAGONAL_COST * weight` if moving diagonally.
      * - Returns `weight` if moving cardinally.
      */
-    int getCost(const State& from, const State& to) const;
+    double getCost(const State& from, const State& to) const;
 
     /**
      * @brief Checks if a state is valid (inside world and not blocked).
