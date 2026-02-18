@@ -20,8 +20,8 @@ private:
     static const std::vector<State> moves; // Possible moves including diagonals.
 
 public:
-    static constexpr double DIAGONAL_COST = 1.4142; // diagonal move multiplier
-    static constexpr int NOT_NEIGHBOR = -2; // non-neighbor state
+    static constexpr double DIAGONAL_COST = 1.4142; // Represents the cost multiplier for diagonal movement
+    static constexpr int NOT_NEIGHBOR = -2;         // Indicates that 'to' is not a valid neighbor
 
     /**
      * @brief Constructs a graph using the given world.
@@ -32,24 +32,27 @@ public:
 
     /**
      * @brief Returns all valid neighboring states of a given state.
-     * 
-     * @param state Current state
-     * 
-     * @return Vector of reachable neighboring states
+     *
+     * This function generates all neighboring states (8 directions), and checks if each one is valid
+     * (i.e., not blocked and within grid boundaries).
+     *
+     * @param state The current state
+     * @return A vector of reachable neighboring states
      */
     std::vector<State> getNeighbors(const State& state) const;
 
     /**
      * @brief Returns the movement cost between two adjacent states.
-     * 
+     *
+     * This function calculates the cost of moving between two states (from 'from' to 'to').
+     * - Returns `BLOCK` if 'to' is blocked or out-of-bounds.
+     * - Returns `NOT_NEIGHBOR` if 'to' is not a valid neighbor of 'from'.
+     * - Returns `DIAGONAL_COST * weight` for diagonal moves.
+     * - Returns `weight` for cardinal (horizontal or vertical) moves.
+     *
      * @param from Starting state
      * @param to Ending state
-     * 
-     * @return 
-     * - Returns `BLOCK` if 'to' is blocked or out-of-bounds.
-     * - Returns `NOT_NEIGHBOR` if 'to' is not a neighbor of 'from'.
-     * - Returns `DIAGONAL_COST * weight` if moving diagonally.
-     * - Returns `weight` if moving cardinally.
+     * @return The movement cost between the two states
      */
     double getCost(const State& from, const State& to) const;
 

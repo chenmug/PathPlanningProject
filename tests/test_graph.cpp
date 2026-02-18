@@ -187,6 +187,30 @@ void testGraphPathCost()
 }
 
 
+// -------------------------
+// GRAPH COST - BLOCK PATH
+// -------------------------
+void testGraphCostWithBlockPath()
+{
+    World world(2, 2);
+    Graph graph(&world);
+
+    State from{ 0,0 };
+    State to{ 1,1 };
+    State blocked1{ 1,1 }, blocked2{ 1,0 }, blocked3{ 0,1 };
+
+    world.setWeight(from, 1.0);
+    world.setWeight(to, 5.0);
+    world.setWeight(blocked1, World::BLOCK);
+    world.setWeight(blocked2, World::BLOCK);
+    world.setWeight(blocked3, World::BLOCK);
+
+    // Ensure movement is not possible due to blocked cells
+    double cost = graph.getCost(from, to);
+    check(cost == World::BLOCK, "getCost with block path");
+}
+
+
 // --------------------
 // GRAPH IS GOAL
 // --------------------
@@ -222,6 +246,39 @@ void testGraphIsValid()
 }
 
 
+// ---------------------------
+// DIAGONAL MOVEMENT TEST
+// ---------------------------
+void testGraphWithObstaclesDiagonal()
+{
+    World world(5, 5);
+    Graph graph(&world);
+    State s1{ 0,0 }, s2{ 1,1 };
+
+    world.setWeight(s2, World::BLOCK);
+
+    double cost = graph.getCost(s1, s2);
+    check(cost == World::BLOCK, "Diagonal move blocked by obstacles");
+}
+
+
+// ---------------------------
+// SMALL GRAPH TEST
+// ---------------------------
+void testSmallGraph()
+{
+    World world(1, 1);
+    Graph graph(&world);
+    State s{ 0, 0 };
+
+    world.setWeight(s, World::BLOCK);
+
+    check(graph.getNeighbors(s).empty(), "non neighbors in 1x1 graph");
+    check(graph.getCost(s, s) == World::BLOCK, "cost in 1x1 graph is equal to block");
+    check(!graph.isValid(s), "validity check for 1x1 - block");
+}
+
+
 // --------------------
 // GRAPH RUN TESTS
 // --------------------
@@ -233,6 +290,9 @@ void runGraphTests()
     testGraphWithObstacles();
     testGraphCost();
     testGraphPathCost();
+    testGraphCostWithBlockPath();
     testGraphIsGoal();
     testGraphIsValid();
+    testGraphWithObstaclesDiagonal();
+    testSmallGraph();
 }
