@@ -43,7 +43,7 @@ public:
     /**
      * @brief Constructs a world object with given dimensions.
      *
-     * Initializes all cells with default weight 1 (free).
+     * Initializes all cells with default weight 1.0 (free).
      *
      * @param w Width of the world
      * @param h Height of the world
@@ -67,30 +67,33 @@ public:
     /**
      * @brief Returns the weight (movement cost) of a given cell.
      *
-     * Retrieves the weight (or movement cost) of the specified cell based on its state.
+     * Retrieves the weight (or movement cost) for the specified cell based on its state. 
+     * The function return `BLOCK` if the cell is out of bounds.
      *
-     * @param s The state of the cell.
-     * 
-     * @return Weight of the cell (double)
+     * @param s The state of the cell to check
+     *
+     * @return Weight of the cell (double), representing the movement cost (or -1.0 for blocked cells)
      */
     double getWeight(const State& s) const;
 
     /**
      * @brief Sets the weight (movement cost) of a given cell.
      *
-     * Updates the weight (movement cost) for the specified cell, using its state.
+     * Updates the weight (movement cost) for the specified cell, identified by its state.
+     * If the cell is out of bounds, the function returns false and does not update the grid.
+     * If the provided weight is negative, it will be set to `BLOCK`.
      *
-     * @param s The state of the cell.
-     * @param weight The new weight to assign to the cell (double)
-     * 
-     * @return true if the cell exists and was updated, false if out of bounds
+     * @param s The state of the cell to modify
+     * @param weight The new weight (movement cost) to assign to the cell
+     *
+     * @return true if the cell exists within bounds and was updated, false if the cell is out of bounds
      */
     bool setWeight(const State& s, double weight);
 
     /**
      * @brief Checks whether a given cell is free (walkable).
      *
-     * Determines if the specified cell is free (walkable), meaning its weight is not -1
+     * Determines if the specified cell is free (walkable), meaning its weight is not -1.0
      * and it is within the grid boundaries.
      *
      * @param s The state of the cell.
@@ -100,7 +103,10 @@ public:
     bool isFree(const State& s) const;
 
     /**
-     * @brief Resets all cells to default weight (1.0 = free).
+     * @brief Resets all cells to the default weight (1.0 = free).
+     *
+     * This function resets the entire world grid, setting every cell's weight to 1.0, which represents a free (walkable) cell.
+     * It will override all previously set weights, including blocked cells (which had weight = -1.0), setting them all to the default value of 1.0.
      */
     void clearGrid();
 };
