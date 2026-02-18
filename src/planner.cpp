@@ -33,10 +33,11 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
     std::queue<State> neighbors;
     State current = { 0,0 };
     double totalCost = 0.0;
+    int nodesExpanded = 0;
 
     if (start == goal)
     {
-        return { {start}, true, 0.0, 0.0 };
+        return { {start}, true, 0.0, 0.0, 1 };
     }
 
     neighbors.push(start);
@@ -46,6 +47,7 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
     {
         current = neighbors.front();
         neighbors.pop();
+        nodesExpanded++;
 
         if (current == goal)
         {
@@ -65,13 +67,13 @@ PlanResults Planner::runBFS(const State& start, const State& goal) const
 
     if (parents.find(goal) == parents.end())
     {
-        return { {}, false, 0.0, 0.0 };
+        return { {}, false, 0.0, 0.0, nodesExpanded };
     }
 
     auto path = reconstructPath(start, goal, parents);
     totalCost = static_cast<double>(path.size() - 1);
 
-    return { path, true, totalCost, 0.0 };
+    return { path, true, totalCost, 0.0, nodesExpanded };
 }
 
 
@@ -85,10 +87,11 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
     std::unordered_map<State, State> parents;
     double new_cost = 0.0;
     double new_priority = 0.0;
+    int nodesExpanded = 0;
 
     if (start == goal)
     {
-        return { {start}, true, 0.0, 0.0 };
+        return { {start}, true, 0.0, 0.0, 1 };
     }
 
     g_cost[start] = 0.0;
@@ -99,6 +102,7 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
     {
         auto [priority, current] = pq.top();
         pq.pop();
+        nodesExpanded++;
 
         if (current == goal)
         {
@@ -127,11 +131,11 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
 
     if (parents.find(goal) == parents.end())
     {
-        return { {}, false, 0.0, 0.0 };
+        return { {}, false, 0.0, 0.0, 1 };
     }
 
     auto path = reconstructPath(start, goal, parents);
-    return { path, true, g_cost[goal], 0.0 };
+    return { path, true, g_cost[goal], 0.0, nodesExpanded };
 }
 
 

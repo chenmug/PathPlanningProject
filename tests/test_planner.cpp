@@ -58,6 +58,7 @@ void testPlannerBasicPath()
     check(isValidPath(result.path, graph), "basic path: valid neighbors");
     check(result.totalCost > 0, "basic path: cost positive");
     check(result.executionTime >= 0.0, "basic path: execution time non-negative");
+    check(result.nodesExpanded > 0, "basic path: nodes expanded greater than 0");
 }
 
 
@@ -157,10 +158,10 @@ void testPlannerStartEqualsGoal()
 }
 
 
-// -------------------
-// DIJKSTRA EQUAL A* 
-// -------------------
-void testDijkstraEqualsAStar()
+// ----------------------------------
+// DIJKSTRA EQUAL A* - WEIGHTS = 1.0
+// ----------------------------------
+void testDijkstraEqualsAStarWithFixedWeights()
 {
     World world(6, 6);
     Graph graph(&world);
@@ -170,8 +171,30 @@ void testDijkstraEqualsAStar()
     auto dijkstra = planner.plan(start, goal, SearchType::Dijkstra);
     auto astar = planner.plan(start, goal, SearchType::AStar);
 
-    check(dijkstra.success && astar.success, "Dijkstra vs A*: both succeed");
-    checkDouble(dijkstra.totalCost, astar.totalCost, "Dijkstra vs A*: same optimal cost");
+    check(dijkstra.success && astar.success, "Dijkstra vs A* with fixed weights: both succeed");
+    checkDouble(dijkstra.totalCost, astar.totalCost, "Dijkstra vs A* with fixed weights: same optimal cost");
+}
+
+
+// ----------------------------------------
+// DIJKSTRA EQUAL A* - VARIABLE WEIGHTS
+// ----------------------------------------
+void testDijkstraEqualsAStarWithVariableWeights()
+{
+    World world(5, 5);
+    Graph graph(&world);
+    Planner planner(graph);
+    State start{ 0,0 }, goal{ 4,4 };
+
+    world.setWeight({ 1,1 }, 2.5);
+    world.setWeight({ 2,2 }, 3.8);
+    world.setWeight({ 3,3 }, 4.7);
+
+    auto dijkstra = planner.plan(start, goal, SearchType::Dijkstra);
+    auto astar = planner.plan(start, goal, SearchType::AStar);
+
+    check(dijkstra.success && astar.success, "Dijkstra vs A* with variable weights: both succeed");
+    checkDouble(astar.totalCost, dijkstra.totalCost, "Dijkstra vs A* with variable weights: same optimal cost");
 }
 
 
@@ -232,26 +255,24 @@ void testBFSReturnsShortestPathLength()
 }
 
 
-// ------------------
-// A* OPTIMAL PATH
-// ------------------
-void testAStarOptimalPath()
+// -----------------------------
+// TEST NODES EXPANDED COUNTER
+// -----------------------------
+void testNodesExpanded()
 {
     World world(5, 5);
     Graph graph(&world);
     Planner planner(graph);
-    State start{ 0,0 }, goal{ 4,4 };
+    State start{ 0, 0 }, goal{ 4, 4 };
 
-    world.setWeight({ 1,1 }, 20);
-    world.setWeight({ 2,2 }, 20);
-    world.setWeight({ 3,3 }, 20);
+    auto resultBFS = planner.plan(start, goal, SearchType::BFS);
+    check(resultBFS.nodesExpanded > 0, "BFS nodes expanded greater than 0");
 
-    auto dijkstra = planner.plan(start, goal, SearchType::Dijkstra);
-    auto astar = planner.plan(start, goal, SearchType::AStar);
+    auto resultDijkstra = planner.plan(start, goal, SearchType::Dijkstra);
+    check(resultDijkstra.nodesExpanded > 0, "Dijkstra nodes expanded greater than 0");
 
-    check(dijkstra.success && astar.success, "A* optimal path: both succeed");
-    checkDouble(astar.totalCost, dijkstra.totalCost,
-        "A* optimal path: A* finds optimal cost equal to Dijkstra");
+    auto resultAStar = planner.plan(start, goal, SearchType::AStar);
+    check(resultAStar.nodesExpanded > 0, "A* nodes expanded greater than 0");
 }
 
 
@@ -291,10 +312,11 @@ void runPlannerTests()
     testPlannerSinglePath();
     testPlannerUnreachableGoal();
     testPlannerStartEqualsGoal();
-    testDijkstraEqualsAStar();
+    testDijkstraEqualsAStarWithFixedWeights();
+    testDijkstraEqualsAStarWithVariableWeights();
     testBlockedStart();
     testBlockedGoal();
     testBFSReturnsShortestPathLength();
-    testAStarOptimalPath();
+    testNodesExpanded();
     testPlannerFullyBlockedWorld();
 }

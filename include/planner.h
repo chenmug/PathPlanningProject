@@ -29,11 +29,16 @@ enum class SearchType
  * - success: True if a path was found, false otherwise
  * - totalCost: Total accumulated cost of the path (0 if no path)
  * - executionTime: Time taken to compute the plan (in milliseconds)
+ * - nodesExpanded: Number of nodes expanded during the search
  *
  * If no path is found:
  * - path is empty
  * - success is false
  * - totalCost is 0
+ *
+ * The `nodesExpanded` value is important for comparing the efficiency and optimality
+ * of different pathfinding algorithms. In general, fewer expanded nodes can indicate
+ * better performance (e.g., faster or more optimal search).
  */
 struct PlanResults
 {
@@ -41,6 +46,7 @@ struct PlanResults
     bool success;            // True if a valid path exists
     double totalCost;        // Total cost of the path
     double executionTime;    // Time taken (milliseconds)
+    int nodesExpanded;       // Number of nodes expanded during the search
 };
 
 /**
@@ -98,7 +104,7 @@ private:
      * @param start Starting state
      * @param goal Goal state
      * 
-     * @return PlanResults containing the path, success flag, total path length and execution time
+     * @return PlanResults containing path, success, total cost, execution time and nodesExpanded
      */
     PlanResults runBFS(const State& start, const State& goal) const;
 
@@ -114,7 +120,7 @@ private:
      * @param goal Goal state
      * @param type SearchType::Dijkstra or SearchType::AStar
      * 
-     * @return PlanResults containing path, success flag, total accumulated cost and execution time
+     * @return PlanResults containing path, success, total cost, execution time and nodesExpanded
      */
     PlanResults runWeightedSearch(const State& start, const State& goal, SearchType type) const;
 
@@ -126,7 +132,7 @@ private:
      * @param start Starting state
      * @param goal Goal state
      * 
-     * @return PlanResults containing path, success, total cost and execution time
+     * @return PlanResults containing path, success, total cost, execution time and nodesExpanded
      */
     PlanResults runDijkstra(const State& start, const State& goal) const;
 
@@ -138,7 +144,7 @@ private:
      * @param start Starting state
      * @param goal Goal state
      * 
-     * @return PlanResults containing path, success, total cost and execution time
+     * @return PlanResults containing path, success, total cost, execution time and nodesExpanded 
      */
     PlanResults runAStar(const State& start, const State& goal) const;
 
@@ -178,6 +184,7 @@ public:
      * - success flag
      * - total cost
      * - execution time (ms)
+     * - nodesExpanded 
      */
     PlanResults plan(const State& start, const State& goal, SearchType type = SearchType::BFS) const;
 };
