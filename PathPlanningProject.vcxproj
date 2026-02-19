@@ -138,9 +138,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\display_manager.cpp" />
     <ClCompile Include="src\graph.cpp" />
     <ClCompile Include="src\planner.cpp" />
     <ClCompile Include="src\simulation.cpp" />
+    <ClCompile Include="src\stats_manager.cpp" />
     <ClCompile Include="src\world.cpp" />
     <ClCompile Include="tests\run_tests.cpp" />
   </ItemGroup>
@@ -149,11 +151,14 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\colors.h" />
+    <ClInclude Include="include\display_manager.h" />
     <ClInclude Include="include\graph.h" />
     <ClInclude Include="include\planner.h" />
     <ClInclude Include="include\run_tests.h" />
     <ClInclude Include="include\simulation.h" />
     <ClInclude Include="include\state.h" />
+    <ClInclude Include="include\stats_manager.h" />
     <ClInclude Include="include\world.h" />
     <ClInclude Include="tests\test_framework.h" />
     <ClInclude Include="tests\test_graph.cpp" />
