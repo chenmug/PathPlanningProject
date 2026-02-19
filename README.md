@@ -1,75 +1,144 @@
-# Grid-Based Path Planning & Decision System (C++)
+﻿# Grid-Based Path Planning System (C++)
 
-**Status:** Work in Progress � BFS, Dijkstra & A* implemented  
+## Overview
+A **grid-based path planning system** implemented in modern C++, showcasing classical search algorithms (**BFS, Dijkstra, A***).  
+The project emphasizes **deterministic algorithmic behavior**, **clean object-oriented design**, and **low-level implementation from scratch**, with no external graphics libraries required.
 
-A grid-based path planning and decision system implemented in modern C++, focusing on algorithmic design, clean object-oriented architecture, and low-level implementation from scratch. No external libraries are used (SFML optional for visualization).
-
----
-
-## Motivation
-- Showcase C++ fundamentals and object-oriented design
-- Implement classical pathfinding algorithms from scratch
-- Build a clear, extensible architecture for planning and decision-making
-- Maintain deterministic behavior and testability
+This system is suitable for demonstrating pathfinding performance, experimenting with search strategies, and highlighting software engineering skills.
 
 ---
 
-## System Overview
-
-Layers:
-
-```
-World -> Graph -> Planner -> Decision -> Simulation
-```
-
-**Responsibilities:**
-- **World:** Stores the grid as weighted cells. Free cells have weight 1, blocked cells use -1. Supports querying and updating weights, checking boundaries, and whether cells are walkable (`isFree`).
-- **State:** Represents discrete positions `(x, y)` in the grid and is used in all pathfinding algorithms.
-- **Graph:** Generates neighbors (8-directional) and movement costs, handles blocked cells, and provides `getCost` for both cardinal and diagonal moves.
-- **Planner:** Computes paths using BFS (unweighted), Dijkstra (weighted), and A* (weighted with Chebyshev heuristic). Handles path reconstruction and total cost calculation.
-- **Decision:** Chooses goals and invokes the planner.
-- **Simulation:** Applies actions in discrete steps; optionally visualized with SFML.
+## Key Engineering Goals
+- Clean separation of concerns between **World, Graph, Planner, Simulation, DisplayManager, and StatsManager**  
+- Deterministic and repeatable results  
+- Efficient pathfinding in weighted or unweighted grids  
+- Console visualization with colored output for clarity  
+- Easily testable and extensible architecture  
 
 ---
 
-## Algorithms
-- **Implemented:** BFS, Dijkstra, A* with heuristics, parent-based path reconstruction, hash-based visited tracking  
-- Supports weighted edges, 8-directional movement, and blocked/free cells (-1 = blocked, 1 = free)  
-- All implemented manually, no external libraries  
+## Core System Flow
+1. **World**: A 2D grid of weighted cells (1.0 = free, -1.0 = blocked). Supports querying, updating weights, and boundary checks.  
+2. **State**: Represents discrete `(x, y)` positions in the grid.  
+3. **Graph**: Computes neighbors (8-directional), movement costs, and path validation.  
+4. **Planner**: Implements BFS (unweighted), Dijkstra (weighted), and A* (weighted with Chebyshev heuristic), reconstructs paths, and computes total cost.  
+5. **Simulation**: Executes paths step by step, visualizes Agent movement in the console, and displays metrics such as cost, steps, and expanded nodes.  
+6. **DisplayManager**: Handles grid rendering with ANSI colors, marking Agent (`A`), path (`*`), goal (`G`), and obstacles (`#`).  
+7. **StatsManager**: Prints comparisons of algorithm results in a table format, including cost, path length, expanded nodes, execution time, and checks for A* optimality.
+
+---
+
+## Algorithm Implementation
+- **BFS**: Unweighted shortest path using a queue-based search  
+- **Dijkstra**: Weighted shortest path for grids with variable costs  
+- **A***: Weighted shortest path with heuristic (Chebyshev) and path reconstruction  
+- All algorithms are implemented **from scratch** using standard C++ STL containers  
+- Supports blocked cells, weighted cells, and diagonal movement  
+
+---
+
+## Visualization & Console Output
+- Uses ANSI escape codes for **colored console output**  
+- Symbols:  
+  - `A` (blue) = Agent  
+  - `*` (green) = Path taken  
+  - `G` (yellow) = Goal  
+  - `#` (red) = Obstacles  
+- Displays current step, points/cost, and selected cell weight during simulation  
+- Optional rerun with new random grid  
 
 ---
 
 ## Testing
-Unit and integration tests cover:
-- **State:** equality & hashing, default constructor, extreme values
-- **World:** grid initialization, default/free/blocked cells, boundary checks, weight updates, negative weight protection, `clearGrid`
-- **Graph:** neighbor generation (8 directions) and cost calculations
-- **Planner:** pathfinding correctness & path validation for BFS, Dijkstra, and A*
-- End-to-end system sanity
+Unit and integration tests cover:  
+- **State**: equality, hashing, constructors  
+- **World**: grid initialization, weight updates, boundary checks  
+- **Graph**: neighbor generation, movement costs  
+- **Planner**: correctness of BFS, Dijkstra, and A* paths, cost validation  
+- **Simulation**: end-to-end console execution  
+- **DisplayManager**: correct grid rendering, path and obstacle marking  
+- **StatsManager**: result comparison tables and optimality checks  
 
 ---
 
 ## Project Structure
 
 ```
-include/      # Header files
-src/          # Implementation files
-tests/        # Unit & integration tests
-main.cpp      # Entry point
+include/        
+├─ state.h
+├─ world.h
+├─ graph.h
+├─ planner.h
+├─ simulation.h
+├─ display_manager.h
+├─ colors.h
+├─ stats_manager.h
+
+
+src/           
+├─ display_manager.cpp
+├─ world.cpp
+├─ graph.cpp
+├─ planner.cpp
+├─ simulation.cpp
+├─ stats_manager.cpp
+
+tests/          # Unit tests
+
+main.cpp        # Entry point with console menu for tests, simulation, and algorithm comparison
 ```
 
 ---
 
-## Planned Extensions
-- Rule-based or multi-agent decision-making
-- Simulation loop with logging/visualization
-- Advanced motion models
+## Console Menu Features
+- **Run Unit Tests**: Execute automated tests for all modules  
+- **Run Console Simulation**: Select an algorithm and simulate Agent movement  
+- **Compare Algorithms**: Run BFS, Dijkstra, and A* on the same grid and compare:  
+  - Path cost  
+  - Path length  
+  - Expanded nodes  
+  - Execution time  
+  - Optimality check for A* against Dijkstra (future enhancement table planned in `StatsManager`)  
 
 ---
 
-## Build & Environment
-- **Language:** C++
-- **IDE:** Visual Studio (Windows/Linux)
-- **Dependencies:** Standard library only (SFML optional for visualization)
+## How to Build & Run 
+
+- **Language:** C++  
+- **Dependencies:** Standard library only  
+
+### Windows (Visual Studio)
+- Open project in Visual Studio:
+- Add all `.cpp` and `.h` files 
+- Set `main.cpp` as startup 
+- Build and Run
+
+### Linux / macOS
+```bash
+g++ -std=c++14 -Iinclude src/*.cpp main.cpp -o pathfinder
+
+./pathfinder
+
+```
+
+- The console menu allows you to run unit tests, simulate agent movement, or compare algorithms.
+	
+---
+
+## Future Extensions
+- Multi-agent path planning  
+- More complex heuristics or weighted movement strategies  
+- Enhanced console visualization (ASCII or extended colors)  
+- Fully implemented StatsManager optimality table function  
+- Integration with graphical visualization frameworks (optional)  
 
 ---
+
+## Summary
+This project demonstrates:
+- Classical pathfinding algorithms implemented **from scratch**  
+- Deterministic, testable behavior  
+- Clean, modular object-oriented design  
+- Interactive console-based visualization and performance comparison  
+
+It is designed to showcase programming skills, OOP design, and algorithmic implementation.
