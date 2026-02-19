@@ -9,7 +9,7 @@ This system is suitable for demonstrating pathfinding performance, experimenting
 ---
 
 ## Key Engineering Goals
-- Clean separation of concerns between **World, Graph, Planner, Simulation, DisplayManager, and StatsManager**  
+- Clean separation of concerns between **World, Graph, Planner, Simulation, DisplayManager, StatsManager**, and core data structures **State**
 - Deterministic and repeatable results  
 - Efficient pathfinding in weighted or unweighted grids  
 - Console visualization with colored output for clarity  
@@ -73,7 +73,6 @@ include/
 ├─ display_manager.h
 ├─ colors.h
 ├─ stats_manager.h
-
 
 src/           
 ├─ display_manager.cpp
