@@ -83,15 +83,29 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
 {
     using PQElement = std::pair<double, State>;
     std::priority_queue<PQElement, std::vector<PQElement>, PQCompare> pq;
+
     std::unordered_map<State, double> g_cost;
     std::unordered_map<State, State> parents;
+    std::unordered_set<State> closed;
+
+    PlanResults result;
+
     double new_cost = 0.0;
     double new_priority = 0.0;
     int nodesExpanded = 0;
 
+    // correctness verification variables 
+    double lastExtractedCost = -1.0;
+    bool monotonic = true;
+    bool heuristicConsistent = true;
+
     if (start == goal)
     {
-        return { {start}, true, 0.0, 0.0, 1 };
+        result.path = { start };
+        result.success = true;
+        result.totalCost = 0.0;
+        result.nodesExpanded = 1;
+        return result;
     }
 
     g_cost[start] = 0.0;
@@ -102,7 +116,24 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
     {
         auto [priority, current] = pq.top();
         pq.pop();
+
+        // Skip if already processed
+        if (closed.find(current) != closed.end())
+        {
+            continue;
+        }
+
+        closed.insert(current);
         nodesExpanded++;
+
+        double currentCost = g_cost[current];
+
+        // Monotonic extraction check 
+        if (lastExtractedCost > currentCost)
+        {
+            monotonic = false;
+        }
+        lastExtractedCost = currentCost;
 
         if (current == goal)
         {
@@ -113,10 +144,24 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
         {
             new_cost = g_cost[current] + graph.getCost(current, neighbor);
 
+            // A* consistency check 
+            if (type == SearchType::AStar)
+            {
+                double hCurrent = heuristic(current, goal);
+                double hNeighbor = heuristic(neighbor, goal);
+                double edgeCost = graph.getCost(current, neighbor);
+
+                if (hCurrent > edgeCost + hNeighbor)
+                {
+                    heuristicConsistent = false;
+                }
+            }
+
             if (g_cost.find(neighbor) == g_cost.end() || new_cost < g_cost[neighbor])
             {
                 g_cost[neighbor] = new_cost;
                 parents[neighbor] = current;
+
                 new_priority = new_cost;
 
                 if (type == SearchType::AStar)
@@ -129,13 +174,34 @@ PlanResults Planner::runWeightedSearch(const State& start, const State& goal, Se
         }
     }
 
-    if (parents.find(goal) == parents.end())
+    // Build result 
+    if (parents.find(goal) != parents.end())
     {
-        return { {}, false, 0.0, 0.0, 1 };
+        result.path = reconstructPath(start, goal, parents);
+        result.totalCost = g_cost[goal];
+        result.success = true;
+    }
+    else
+    {
+        result.success = false;
     }
 
-    auto path = reconstructPath(start, goal, parents);
-    return { path, true, g_cost[goal], 0.0, nodesExpanded };
+    result.nodesExpanded = nodesExpanded;
+
+    // correctness flags
+    result.monotonicityVerified = monotonic;
+    result.heuristicConsistent = heuristicConsistent;
+
+    if (type == SearchType::Dijkstra)
+    {
+        result.optimalGoalExtraction = monotonic && result.success;
+    }
+    else if (type == SearchType::AStar)
+    {
+        result.optimalGoalExtraction = result.success && heuristicConsistent;
+    }
+
+    return result;
 }
 
 

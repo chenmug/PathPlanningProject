@@ -300,6 +300,34 @@ void testPlannerFullyBlockedWorld()
 }
 
 
+// ------------------------
+// CORRECTNESS FLAGS
+// ------------------------
+void testCorrectnessFlags()
+{
+    World world(5, 5);
+    Graph graph(&world);
+    Planner planner(graph);
+    State start{ 0, 0 }, goal{ 4, 4 };
+    bool dijkstraCorrect = false;
+    bool aStarCorrect = false;
+
+    // Dijkstra 
+    auto resultDijkstra = planner.plan(start, goal, SearchType::Dijkstra);
+    dijkstraCorrect = resultDijkstra.success &&
+        resultDijkstra.monotonicityVerified &&
+        resultDijkstra.optimalGoalExtraction;
+    check(dijkstraCorrect, "Dijkstra: all correctness flags passed");
+
+    // A* 
+    auto resultAStar = planner.plan(start, goal, SearchType::AStar);
+    aStarCorrect = resultAStar.success &&
+        resultAStar.heuristicConsistent &&
+        resultAStar.optimalGoalExtraction;
+    check(aStarCorrect, "A*: all correctness flags passed");
+}
+
+
 // --------------------
 // PLANNER RUN TESTS
 // --------------------
@@ -319,4 +347,5 @@ void runPlannerTests()
     testBFSReturnsShortestPathLength();
     testNodesExpanded();
     testPlannerFullyBlockedWorld();
+    testCorrectnessFlags();
 }
