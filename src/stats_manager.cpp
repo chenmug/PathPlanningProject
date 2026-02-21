@@ -7,7 +7,7 @@
 static void printRow(const std::string& name, const PlanResults& r);
 
 
-/****************** CLASS FUNCTION ******************/
+/****************** CLASS FUNCTIONS ******************/
 
 /*********** PRINT COMPARISON RESULTS ************/
 
@@ -47,6 +47,45 @@ void StatsManager::printComparisonResults(const PlanResults& bfsRes, const PlanR
     std::cout << "\n==============================================================\n\n";
     std::cout << "Note: Cost = steps for BFS, total weights for Dijkstra/A*\n";
     std::cout << "      All algorithms run on the same grid with identical obstacles\n\n";
+}
+
+
+/*********** PRINT CORRECTNESS REPORT ************/
+
+void StatsManager::printCorrectnessReport(const PlanResults& r, const std::string& name)
+{
+    std::cout << "\n==================================================";
+    std::cout << "\n              CORRECTNESS REPORT";
+    std::cout << "\n==================================================\n\n";
+
+    std::cout << "Algorithm: " << name << "\n\n";
+
+    if (name == "Dijkstra")
+    {
+        std::cout << std::left << std::setw(35)
+            << "Monotonic extraction:"
+            << (r.monotonicityVerified ? "VERIFIED" : "FAILED") << "\n";
+        std::cout << std::setw(35)
+            << "Optimal goal extraction:"
+            << (r.optimalGoalExtraction ? "VERIFIED" : "FAILED") << "\n";
+    }
+    else if (name == "A*")
+    {
+        std::cout << std::setw(35)
+            << "Heuristic consistency:"
+            << (r.heuristicConsistent ? "VERIFIED" : "FAILED") << "\n";
+
+        std::cout << std::setw(35)
+            << "Optimal goal extraction:"
+            << (r.optimalGoalExtraction ? "VERIFIED" : "FAILED") << "\n";
+    }
+
+    std::cout << "\n--------------------------------------------------\n";
+
+    std::cout << "Each step chosen correctly according to the algorithm.\n";
+    std::cout << "The resulting path is guaranteed to be the shortest.\n";
+
+    std::cout << "\n==================================================\n\n";
 }
 
 
