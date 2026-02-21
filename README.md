@@ -34,7 +34,7 @@ It is suitable for demonstrating pathfinding performance, experimenting with sea
 - **Dijkstra**: Weighted shortest path for grids with variable costs  
 - **A***: Weighted shortest path with heuristic (Chebyshev) and path reconstruction  
 - All algorithms are implemented **from scratch** using standard C++ STL containers  
-- Supports blocked cells, weighted cells, and **diagonal movement with √2 cost**  
+- Supports blocked cells, weighted cells, and **diagonal movement with sqrt(2) cost**  
 
 ---
 
