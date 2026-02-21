@@ -2,23 +2,24 @@
 
 ## Overview
 A **grid-based path planning system** implemented in modern C++, showcasing classical search algorithms (**BFS, Dijkstra, A***).  
-The project emphasizes **deterministic algorithmic behavior**, **clean object-oriented design**, and **low-level implementation from scratch**, with no external graphics libraries required.
+The project emphasizes **deterministic algorithmic behavior**, **clean object-oriented design**, and **low-level implementation from scratch**, with **no external graphics libraries** required.
 
-This system is suitable for demonstrating pathfinding performance, experimenting with search strategies, and highlighting software engineering skills.
+This system supports **weighted grids**, **diagonal movement**, and **step-by-step visualization**.  
+It is suitable for demonstrating pathfinding performance, experimenting with search strategies, and highlighting software engineering skills.
 
 ---
 
 ## Key Engineering Goals
-- Clean separation of concerns between **World, Graph, Planner, Simulation, DisplayManager, StatsManager**, and core data structures **State**
+- Clear separation of concerns between **World, Graph, Planner, Simulation, DisplayManager, StatsManager**, and core data structures **State**
 - Deterministic and repeatable results  
 - Efficient pathfinding in weighted or unweighted grids  
-- Console visualization with colored output for clarity  
+- Console visualization with **colored output** for clarity  
 - Easily testable and extensible architecture  
 
 ---
 
 ## Core System Flow
-1. **World**: A 2D grid of weighted cells (1.0 = free, -1.0 = blocked). Supports querying, updating weights, and boundary checks.  
+1. **World**: A 2D grid of weighted cells (`1.0 = free`, `-1.0 = blocked`). Supports querying, updating weights, and boundary checks.  
 2. **State**: Represents discrete `(x, y)` positions in the grid.  
 3. **Graph**: Computes neighbors (8-directional), movement costs, and path validation.  
 4. **Planner**: Implements BFS (unweighted), Dijkstra (weighted), and A* (weighted with Chebyshev heuristic), reconstructs paths, and computes total cost.  
@@ -33,7 +34,7 @@ This system is suitable for demonstrating pathfinding performance, experimenting
 - **Dijkstra**: Weighted shortest path for grids with variable costs  
 - **A***: Weighted shortest path with heuristic (Chebyshev) and path reconstruction  
 - All algorithms are implemented **from scratch** using standard C++ STL containers  
-- Supports blocked cells, weighted cells, and diagonal movement  
+- Supports blocked cells, weighted cells, and **diagonal movement with √2 cost**  
 
 ---
 
@@ -44,7 +45,8 @@ This system is suitable for demonstrating pathfinding performance, experimenting
   - `*` (green) = Path taken  
   - `G` (yellow) = Goal  
   - `#` (red) = Obstacles  
-- Displays current step, points/cost, and selected cell weight during simulation  
+- Displays **current step**, **points/cost**, and **selected cell weight** during simulation  
+- Step-by-step movement animation improves clarity and debugging  
 - Optional rerun with new random grid  
 
 ---
@@ -62,6 +64,7 @@ Unit and integration tests cover:
 ---
 
 ## Project Structure
+
 
 ```
 include/        
@@ -89,6 +92,7 @@ main.cpp        # Entry point with console menu for tests, simulation, and algor
 
 ---
 
+
 ## Console Menu Features
 - **Run Unit Tests**: Execute automated tests for all modules  
 - **Run Console Simulation**: Select an algorithm and simulate Agent movement  
@@ -97,25 +101,24 @@ main.cpp        # Entry point with console menu for tests, simulation, and algor
   - Path length  
   - Expanded nodes  
   - Execution time  
-  - Optimality check for A* against Dijkstra (future enhancement table planned in `StatsManager`)  
+  - Optimality check for A* against Dijkstra  
 
 ---
 
 ## How to Build & Run 
 
 - **Language:** C++  
-- **Dependencies:** Standard library only  
+- **Dependencies:** Only C++ standard library, no external graphics or GUI libraries  
 
 ### Windows (Visual Studio)
-- Open project in Visual Studio:
-- Add all `.cpp` and `.h` files 
-- Set `main.cpp` as startup 
-- Build and Run
+- Open project in Visual Studio  
+- Add all `.cpp` and `.h` files  
+- Set `main.cpp` as startup  
+- Build and Run  
 
 ### Linux / macOS
 ```bash
 g++ -std=c++14 -Iinclude src/*.cpp main.cpp -o pathfinder
-
 ./pathfinder
 
 ```
@@ -128,7 +131,6 @@ g++ -std=c++14 -Iinclude src/*.cpp main.cpp -o pathfinder
 - Multi-agent path planning  
 - More complex heuristics or weighted movement strategies  
 - Enhanced console visualization (ASCII or extended colors)  
-- Fully implemented StatsManager optimality table function  
 - Integration with graphical visualization frameworks (optional)  
 
 ---
