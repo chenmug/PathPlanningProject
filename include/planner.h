@@ -23,7 +23,7 @@ enum class SearchType
 
 /**
  * @struct PlanResults
- * @brief Holds the results of a path planning execution.
+ * @brief Holds the results of a path planning execution, including correctness checks.
  *
  * - path: The computed path from start to goal (empty if not found)
  * - success: True if a path was found, false otherwise
@@ -31,22 +31,35 @@ enum class SearchType
  * - executionTime: Time taken to compute the plan (in milliseconds)
  * - nodesExpanded: Number of nodes expanded during the search
  *
+ * Correctness verification fields (useful for testing algorithm correctness):
+ * - monotonicityVerified: True if nodes were extracted in non-decreasing cost order (for Dijkstra)
+ * - heuristicConsistent: True if the heuristic satisfies consistency (for A*)
+ * - optimalGoalExtraction: True if the goal was reached optimally based on the algorithm
+ *
  * If no path is found:
  * - path is empty
  * - success is false
  * - totalCost is 0
  *
- * The `nodesExpanded` value is important for comparing the efficiency and optimality
- * of different pathfinding algorithms. In general, fewer expanded nodes can indicate
- * better performance (e.g., faster or more optimal search).
+ * These additional fields help ensure that the algorithm behaves correctly:
+ * - Monotonic extraction guarantees optimality in Dijkstra.
+ * - Heuristic consistency ensures A* does not overestimate costs.
+ * - Optimal goal extraction confirms the returned path is the shortest valid path.
+ *
+ * The `nodesExpanded` value remains useful for comparing efficiency across algorithms.
  */
 struct PlanResults
 {
-    std::vector<State> path; // Computed path from start to goal
-    bool success;            // True if a valid path exists
-    double totalCost;        // Total cost of the path
-    double executionTime;    // Time taken (milliseconds)
-    int nodesExpanded;       // Number of nodes expanded during the search
+    std::vector<State> path;           // Computed path from start to goal
+    bool success;                       // True if a valid path exists
+    double totalCost;                   // Total cost of the path
+    double executionTime;               // Time taken (milliseconds)
+    int nodesExpanded;                  // Number of nodes expanded during the search
+
+    // correctness verification 
+    bool monotonicityVerified = true;   // Dijkstra: nodes extracted in non-decreasing cost
+    bool heuristicConsistent = true;    // A*: heuristic satisfies consistency
+    bool optimalGoalExtraction = true;  // Goal was reached optimally
 };
 
 /**
