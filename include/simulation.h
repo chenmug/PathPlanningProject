@@ -32,10 +32,33 @@ private:
     /**
      * @brief Fills the world with random obstacles.
      * 
-     * @param obstaclePercentage Percentage of blocked cells
+     * @param obstaclePercentage How many cells to block as obstacles (0 = none, 100 = all)
      * @param type The search algorithm type (BFS, Dijkstra, or A*) used to decide weight assignment
      */
     void generateRandomObstacles(int obstaclePercentage, SearchType type);
+
+    /**
+     * @brief Animates the path found by the search algorithm using displayGrid function.
+     *
+     * This function visualizes the agent moving along the computed path step by step.
+     *
+     * @param results The PlanResults structure containing the computed path and metadata
+     * @param type The type of algorithm that computed the path (BFS, Dijkstra, or A*)
+     */
+    void visualizePath(const PlanResults& results, SearchType type);
+
+    /**
+     * @brief Checks and prints the correctness of weighted search results.
+     *
+     * For Dijkstra and A*, this function prints a correctness report that verifies:
+     * - Monotonic extraction of nodes (Dijkstra)
+     * - Heuristic consistency (A*)
+     * - Optimal goal extraction
+     *
+     * @param results The PlanResults structure containing the computed path and correctness flags
+     * @param type The type of algorithm (Dijkstra or A*) being verified
+     */
+    void verifyCorrectness(const PlanResults& results, SearchType type);
 
 public:
     /**

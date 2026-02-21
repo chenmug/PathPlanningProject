@@ -48,25 +48,14 @@ void Simulation::generateRandomObstacles(int obstaclePercentage, SearchType type
 }
 
 
-/**************** RUN SIMULATION ****************/
+/**************** VISUALIZE PATH ****************/
 
-void Simulation::run(SearchType type)
+void Simulation::visualizePath(const PlanResults& results, SearchType type)
 {
     std::vector<State> pathSoFar;
-    size_t step = 0;
     double points = 0.0;
+    size_t step = 0;
 
-    generateRandomObstacles(20, type);
-
-    PlanResults results = planner.plan(start, goal, type);
-    if (!results.success)
-    {
-        DisplayManager::displayGrid(world, start, pathSoFar, type, goal, 0, 0);
-        std::cout << "\nNo path found!\n";
-        return;
-    }
-
-    // Visualize the path step by step
     for (step = 1; step < results.path.size(); ++step)
     {
         State prev = results.path[step - 1];
@@ -96,6 +85,44 @@ void Simulation::run(SearchType type)
 
     std::cout << "\nGoal reached! Total points/cost: " << points
         << ", Execution time: " << results.executionTime << " ms\n";
+}
+
+
+/**************** VERIFY CORRECTNESS ****************/
+
+void Simulation::verifyCorrectness(const PlanResults& results, SearchType type)
+{
+    if (type == SearchType::Dijkstra || type == SearchType::AStar)
+    {
+        StatsManager stats;
+        std::string name = (type == SearchType::Dijkstra) ? "Dijkstra" : "A*";
+
+        std::cout << "\nAlgorithm finished. Checking shortest-path correctness...\n";
+        stats.printCorrectnessReport(results, name);
+
+        std::cout << "Press Enter to continue...";
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.get();
+    }
+}
+
+
+/**************** RUN SIMULATION ****************/
+
+void Simulation::run(SearchType type)
+{
+    generateRandomObstacles(20, type);
+    
+    PlanResults results = planner.plan(start, goal, type);
+    if (!results.success)
+    {
+        DisplayManager::displayGrid(world, start, {}, type, goal, 0, 0);
+       std::cout << "\nNo path found!\n";
+       return;
+    }
+
+    visualizePath(results, type);                       
+    verifyCorrectness(results, type);                  
 }
 
 
