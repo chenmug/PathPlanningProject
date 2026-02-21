@@ -21,6 +21,18 @@ public:
      * @param aStarRes The results of the A* algorithm.
      */
     static void printComparisonResults(const PlanResults& bfsRes, const PlanResults& dijRes, const PlanResults& aStarRes);
+
+    /**
+     * @brief Prints a detailed correctness report for a given algorithm.
+     *
+     * Uses the correctness flags in PlanResults to display which verification checks passed:
+     * monotonicityVerified, heuristicConsistent, and optimalGoalExtraction.
+     * This helps visualize why an algorithm is correct and whether it returns an optimal path.
+     *
+     * @param r The PlanResults instance containing results and correctness flags.
+     * @param name The name of the algorithm (e.g., "Dijkstra" or "A*").
+     */
+    void printCorrectnessReport(const PlanResults& r, const std::string& name);
 };
 
 #endif // STATS_MANAGER_H
