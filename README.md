@@ -118,7 +118,7 @@ main.cpp        # Entry point with console menu for tests, simulation, and algor
 
 ### Linux / macOS
 ```bash
-g++ -std=c++14 -Iinclude src/*.cpp main.cpp -o pathfinder
+g++ -std=c++17 -Iinclude src/*.cpp main.cpp -o pathfinder
 ./pathfinder
 
 ```
