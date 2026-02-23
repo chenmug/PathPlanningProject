@@ -1,5 +1,5 @@
 #include <iostream>
-#include "World.h"
+#include "world.h"
 
 /***************** CONSTRUCTOR *****************/
 
