@@ -2,18 +2,10 @@
 #include "world.h"
 #include "state.h"
 #include "test_framework.h"
+#include "test_helper.h"
 #include <algorithm>
 #include <cmath>
 #include <vector>
-
-
-// -------------------------
-// DOUBLE COMPARISON HELPER
-// -------------------------
-void checkDouble(double actual, double expected, const char* testName)
-{
-    check(std::abs(actual - expected) < 1e-6, testName);
-}
 
 
 // -------------------------

@@ -3,6 +3,7 @@
 #include "world.h"
 #include "state.h"
 #include "test_framework.h"
+#include "test_helper.h"
 #include <cmath>
 #include <vector>
 #include <string>
